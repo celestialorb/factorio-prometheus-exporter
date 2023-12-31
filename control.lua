@@ -64,19 +64,17 @@ function update_pollution_metrics()
     for name, value in pairs(game.pollution_statistics.input_counts) do
         metrics["pollution"][name] = game.pollution_statistics.get_input_count(name)
     end
-
-    for name, surface in pairs(game.surfaces) do
-        metrics["surfaces"][name] = {}
-        metrics["surfaces"][name]["pollution"] = surface.get_total_pollution()
-    end
 end
 
 function update_time_metrics()
     metrics["game"]["time"]["tick"] = game.tick
     metrics["game"]["time"]["paused"] = game.tick_paused
+end
 
+function update_surface_metrics()
     for name, surface in pairs(game.surfaces) do
         metrics["surfaces"][name] = {}
+        metrics["surfaces"][name]["pollution"] = surface.get_total_pollution()
         metrics["surfaces"][name]["ticks_per_day"] = surface.ticks_per_day
     end
 end
@@ -86,6 +84,7 @@ function update_metrics()
     update_item_metrics()
     update_fluid_metrics()
     update_pollution_metrics()
+    update_surface_metrics()
     update_research_metrics()
 
     write_metrics()
