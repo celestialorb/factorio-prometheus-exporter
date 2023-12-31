@@ -77,15 +77,38 @@ class FactorioCollector(prometheus_client.registry.Collector):
         yield force_production_stats
         yield force_research_progress
 
-        # Collect the pollution statistics.
-        pollution_stats = prometheus_client.metrics_core.GaugeMetricFamily(
+        # Collect the pollution production statistics.
+        pollution_production_stats = prometheus_client.metrics_core.GaugeMetricFamily(
             name="factorio_pollution_production",
             documentation="The pollution produced or consumed from various sources.",
             labels=["source"],
         )
         for source, pollution in data["pollution"].items():
-            pollution_stats.add_metric(labels=[source], value=pollution)
-        yield pollution_stats
+            pollution_production_stats.add_metric(labels=[source], value=pollution)
+        yield pollution_production_stats
+
+        # Collect the surface metrics.
+        surface_pollution_total = prometheus_client.metrics_core.GaugeMetricFamily(
+            name="factorio_surface_pollution_total",
+            documentation="The total pollution on a given surface.",
+            labels=["surface"],
+        )
+        surface_ticks_per_day = prometheus_client.metrics_core.GaugeMetricFamily(
+            name="factorio_surface_ticks_per_day",
+            documentation="The number of ticks per day on a given surface.",
+            labels=["surface"],
+        )
+        for name, surface in data["surfaces"].items():
+            surface_pollution_total.add_metric(
+                labels=[name],
+                value=surface["pollution"],
+            )
+            surface_ticks_per_day.add_metric(
+                labels=[name],
+                value=surface["ticks_per_day"],
+            )
+        yield surface_pollution_total
+        yield surface_ticks_per_day
 
 
 @click.group()
