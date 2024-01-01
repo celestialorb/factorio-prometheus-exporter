@@ -23,7 +23,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
 
     def collect(self: FactorioCollector) -> None:
         """Collects the Factorio metrics from the mod's output file."""
-        with open(file=self.metrics_path, mode="r", encoding="utf-8") as f:
+        with pathlib.Path.open(file=self.metrics_path, encoding="utf-8") as f:
             data = json.load(f)
 
         # Collect the current game tick.
