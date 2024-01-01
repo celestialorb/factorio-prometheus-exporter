@@ -92,12 +92,14 @@ def package_cmd(version: str) -> None:
 )
 @click.option(
     "--container-image",
+    is_flag=True,
     type=click.BOOL,
     help="Whether or not to publish the container image.",
     default=False,
 )
 @click.option(
     "--factorio-mod",
+    is_flag=True,
     type=click.BOOL,
     help="Whether or not to publish the Factorio mod.",
     default=False,
