@@ -1,8 +1,9 @@
 #!/usr/bin/python
 """Module defining the entrypoint to the CLI utility for the project."""
+from __future__ import annotations
+
 import pathlib
 import tempfile
-import typing
 import zipfile
 
 import click
@@ -33,7 +34,7 @@ def cli() -> None:
     """Entrypoint for the project's CLI utility."""
 
 
-def package(version: str) -> typing.Tuple[pathlib.Path, str]:
+def package(version: str) -> tuple[pathlib.Path, str]:
     """Create the artifacts for the given version."""
     LOGGER.info("packaging artifacts for v{}", version)
 
@@ -78,6 +79,7 @@ def package(version: str) -> typing.Tuple[pathlib.Path, str]:
     default="0.0.0",
 )
 def package_cmd(version: str) -> None:
+    """Package the artifacts for the Factorio mod."""
     package(version=version)
 
 

@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import os
-import pathlib
+import typing
 
 import loguru
 import requests
+
+if typing.TYPE_CHECKING:
+    import pathlib
 
 LOGGER = loguru.logger.opt(colors=True)
 
@@ -46,6 +49,7 @@ class FactorioMod:
             url=f"{FACTORIO_MOD_PORTAL_URL}/api/v2/mods/releases/init_upload",
             data={"mod": self.name},
             headers={"Authorization": f"Bearer {api_key}"},
+            timeout=10,
         )
 
         # Ensure we successfully initialized the publication of the mod.
@@ -62,6 +66,7 @@ class FactorioMod:
             response = requests.post(
                 url=upload_url,
                 files={"file": archive_file},
+                timeout=60,
             )
 
         # Ensure we successfully published the mod.
