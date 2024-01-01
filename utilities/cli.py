@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """Module defining the entrypoint to the CLI utility for the project."""
-import os
+import pathlib
 import shutil
 import tempfile
 import zipfile
@@ -25,24 +25,26 @@ def cli() -> None:
 @click.option("--deploy", type=click.BOOL, default=False)
 @click.option("--deploy-to", type=click.Path(exists=False))
 @click.option("--version", type=click.STRING, default="0.0.0")
-def package(deploy: bool, deploy_to: str, version: str) -> None:  # noqa: FBT001
+def package(deploy: bool, deploy_to: pathlib.Path, version: str) -> None:  # noqa: FBT001
     """Package up the Factorio mod and deploy it to the local server."""
     with tempfile.NamedTemporaryFile(suffix=".zip") as filename:
         # Create a zip archive.
-        with zipfile.ZipFile(file=filename, mode="w") as zip_file:
+        path = pathlib.Path(filename.name)
+        with zipfile.ZipFile(file=path.absolute, mode="w") as zip_file:
             for item in MANIFEST:
+                archive_path = pathlib.Path(modname(version)) / item
                 zip_file.write(
                     filename=item,
-                    arcname=os.path.join(modname(version), item),
+                    arcname=archive_path,
                 )
-        os.chmod(path=filename.name, mode=0o644)
+            path.chmod(mode=0o644)
 
         # If we're not instructed to deploy, simply return as we're done.
         if not deploy:
             return
 
         # Copy the zip archive to the server.
-        destination = os.path.join(deploy_to, f"{modname(version)}.zip")
+        destination = deploy_to / f"{modname(version)}.zip"
         shutil.copy(src=filename.name, dst=destination)
         shutil.chown(path=destination, user=845, group=845)
 

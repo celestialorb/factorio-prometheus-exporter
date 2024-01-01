@@ -16,15 +16,15 @@ import prometheus_client.registry
 class FactorioCollector(prometheus_client.registry.Collector):
     """Collector for the Factorio metrics."""
 
-    metrics_path: str = ""
+    metrics_path: pathlib.Path = None
 
-    def __init__(self: FactorioCollector, metrics_path: str) -> None:
+    def __init__(self: FactorioCollector, metrics_path: pathlib.Path) -> None:
         """Initialize the collector with the path to the metrics file."""
         self.metrics_path = metrics_path
 
     def collect(self: FactorioCollector) -> None:
         """Collect the Factorio metrics from the mod's output file."""
-        with pathlib.Path.open(file=self.metrics_path, encoding="utf-8") as f:
+        with self.metrics_path.open(mode="r", encoding="utf-8") as f:
             data = json.load(f)
 
         # Collect the current game tick.
@@ -141,6 +141,7 @@ def cli() -> None:
 @cli.command()
 @click.option(
     "--metrics-path",
+    type=click.Path(exists=False),
     default="/factorio/script-output/metrics.json",
     help="Path to watch.",
 )
@@ -159,7 +160,7 @@ def run(metrics_path: str, metrics_port: int) -> None:
 
     # Register the Factorio collector.
     prometheus_client.core.REGISTRY.register(
-        FactorioCollector(metrics_path=metrics_path),
+        FactorioCollector(metrics_path=pathlib.Path(metrics_path)),
     )
 
     # Start the Prometheus server in a thread.
