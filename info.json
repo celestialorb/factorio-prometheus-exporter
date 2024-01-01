@@ -1,6 +1,6 @@
 {
   "name": "factorio-prometheus-exporter",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "title": "Factorio Prometheus Exporter",
   "author": "celestialorb",
   "factorio_version": "1.1",

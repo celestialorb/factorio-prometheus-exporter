@@ -1,22 +1,30 @@
 #!/usr/local/bin/python
 """Module defining the entrypoint to the Prometheus exporter."""
-import click
+from __future__ import annotations
+
 import json
+import pathlib
+import time
+
+import click
 import prometheus_client
 import prometheus_client.core
 import prometheus_client.metrics_core
 import prometheus_client.registry
-import time
 
 
 class FactorioCollector(prometheus_client.registry.Collector):
-    metrics_path: str = ""
+    """Collector for the Factorio metrics."""
 
-    def __init__(self, metrics_path: str) -> None:
+    metrics_path: pathlib.Path = None
+
+    def __init__(self: FactorioCollector, metrics_path: pathlib.Path) -> None:
+        """Initialize the collector with the path to the metrics file."""
         self.metrics_path = metrics_path
 
-    def collect(self) -> None:
-        with open(file=self.metrics_path, mode="r", encoding="utf-8") as f:
+    def collect(self: FactorioCollector) -> None:  # noqa: C901 (will rework this soon)
+        """Collect the Factorio metrics from the mod's output file."""
+        with self.metrics_path.open(mode="r", encoding="utf-8") as f:
             data = json.load(f)
 
         # Collect the current game tick.
@@ -127,12 +135,13 @@ class FactorioCollector(prometheus_client.registry.Collector):
 
 @click.group()
 def cli() -> None:
-    pass
+    """Entrypoint for the Prometheus exporter."""
 
 
 @cli.command()
 @click.option(
     "--metrics-path",
+    type=click.Path(exists=False),
     default="/factorio/script-output/metrics.json",
     help="Path to watch.",
 )
@@ -143,6 +152,7 @@ def cli() -> None:
     help="The port to expose the metrics endpoint on.",
 )
 def run(metrics_path: str, metrics_port: int) -> None:
+    """Start the Factorio Prometheus exporter."""
     # Unregister the default collectors.
     prometheus_client.core.REGISTRY.unregister(prometheus_client.GC_COLLECTOR)
     prometheus_client.core.REGISTRY.unregister(prometheus_client.PLATFORM_COLLECTOR)
@@ -150,7 +160,7 @@ def run(metrics_path: str, metrics_port: int) -> None:
 
     # Register the Factorio collector.
     prometheus_client.core.REGISTRY.register(
-        FactorioCollector(metrics_path=metrics_path),
+        FactorioCollector(metrics_path=pathlib.Path(metrics_path)),
     )
 
     # Start the Prometheus server in a thread.
