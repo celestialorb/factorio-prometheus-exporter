@@ -90,19 +90,37 @@ def package_cmd(version: str) -> None:
     help="The semantic version of the artifacts.",
     default="0.0.0",
 )
-def publish(version: str) -> None:
+@click.option(
+    "--container-image",
+    type=click.BOOL,
+    help="Whether or not to publish the container image.",
+    default=True,
+)
+@click.option(
+    "--factorio-mod",
+    type=click.BOOL,
+    help="Whether or not to publish the Factorio mod.",
+    default=True,
+)
+def publish(
+    version: str,
+    container_image: bool,
+    factorio_mod: bool,
+) -> None:
     """Publish the packaged artifacts."""
     (packaged_mod, image) = package(version=version)
 
     # Publish the container image to Docker Hub.
-    client = docker.from_env()
-    LOGGER.info("pushing container image: {}", image)
-    client.images.push(repository=image)
-    LOGGER.info("<g>successfully pushed container image: {}</g>", image)
+    if container_image:
+        client = docker.from_env()
+        LOGGER.info("pushing container image: {}", image)
+        client.images.push(repository=image)
+        LOGGER.info("<g>successfully pushed container image: {}</g>", image)
 
     # Publish the zip archive to Factorio mods.
-    mod = factorio.FactorioMod(name=MODNAME, version=version, archive=packaged_mod)
-    mod.publish()
+    if factorio_mod:
+        mod = factorio.FactorioMod(name=MODNAME, version=version, archive=packaged_mod)
+        mod.publish()
 
 
 if __name__ == "__main__":
