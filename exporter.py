@@ -19,11 +19,11 @@ class FactorioCollector(prometheus_client.registry.Collector):
     metrics_path: str = ""
 
     def __init__(self: FactorioCollector, metrics_path: str) -> None:
-        """Initializes the collector with the path to the metrics file."""
+        """Initialize the collector with the path to the metrics file."""
         self.metrics_path = metrics_path
 
     def collect(self: FactorioCollector) -> None:
-        """Collects the Factorio metrics from the mod's output file."""
+        """Collect the Factorio metrics from the mod's output file."""
         with pathlib.Path.open(file=self.metrics_path, encoding="utf-8") as f:
             data = json.load(f)
 
@@ -151,7 +151,7 @@ def cli() -> None:
     help="The port to expose the metrics endpoint on.",
 )
 def run(metrics_path: str, metrics_port: int) -> None:
-    """Starts the Factorio Prometheus exporter."""
+    """Start the Factorio Prometheus exporter."""
     # Unregister the default collectors.
     prometheus_client.core.REGISTRY.unregister(prometheus_client.GC_COLLECTOR)
     prometheus_client.core.REGISTRY.unregister(prometheus_client.PLATFORM_COLLECTOR)

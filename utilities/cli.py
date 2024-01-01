@@ -11,7 +11,7 @@ MODNAME = "factorio-prometheus-exporter"
 
 
 def modname(version: str) -> str:
-    """Returns the full artifact modname from the given version."""
+    """Return the full artifact modname from the given version."""
     return f"{MODNAME}_{version}"
 
 
