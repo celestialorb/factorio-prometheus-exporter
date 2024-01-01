@@ -40,17 +40,18 @@ class FactorioMod:
         api_key: str = os.getenv("FACTORIO_MODS_API_KEY", None),
     ) -> None:
         """Publish the Factorio mod to the registry."""
-        # Initialize the publication of our Factorio mod.
+        # Initialize the upload of our Factorio mod.
+        LOGGER.info("initializing mod upload: {}", self.name)
         response = requests.post(
-            url=f"{FACTORIO_MOD_PORTAL_URL}/api/v2/mods/init_publish",
-            data={"mod": self.fullname},
+            url=f"{FACTORIO_MOD_PORTAL_URL}/api/v2/mods/releases/init_upload",
+            data={"mod": self.name},
             headers={"Authorization": f"Bearer {api_key}"},
         )
 
         # Ensure we successfully initialized the publication of the mod.
         if not response.ok:
             LOGGER.error(
-                "unable to initialize publication of Factorio mod: {}",
+                "unable to initialize upload of Factorio mod: {}",
                 response.text,
             )
             return
