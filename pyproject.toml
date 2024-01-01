@@ -1,0 +1,4 @@
+[tool.ruff]
+ignore = [
+    "PLE1205",  # Loguru uses template strings, so this error is not applicable.
+]
