@@ -23,3 +23,15 @@ Below is a table of metrics that are exported in this version of the exporter.
 | `factorio_pollution_production`              | `source`                     | The current pollution production (or consumption if negative) total for a given source. |
 | `factorio_surface_pollution_total`           | `surface`                    | The total pollution across the surface.                                                 |
 | `factorio_surface_ticks_per_day`             | `surface`                    | The total number of ticks per day across the surface.                                   |
+
+## Artifacts
+
+As stated in the Design section, this project produces two artifacts.
+
+The first is [the Factorio mod](https://mods.factorio.com/mod/factorio-prometheus-exporter)
+itself that produces a JSON file containing the raw metric data. This will need
+to be installed in your game / server.
+
+The second is [the container image](https://hub.docker.com/repository/docker/celestialorb/factorio-prometheus-exporter/general)
+that reads in the raw metrics file whenever the Prometheus metrics are
+requested.
