@@ -110,6 +110,20 @@ class FactorioCollector(prometheus_client.registry.Collector):
         yield surface_pollution_total
         yield surface_ticks_per_day
 
+        # Collect the entity count metrics.
+        entity_count_stats = prometheus_client.metrics_core.GaugeMetricFamily(
+            name="factorio_entity_count",
+            documentation="The total number of entities.",
+            labels=["force", "name", "surface"],
+        )
+        for surface_name, surface in data["surfaces"].items():
+            for entity_name, count in surface["entities"].items():
+                entity_count_stats.add_metric(
+                    labels=["player", entity_name, surface_name],
+                    value=count,
+                )
+        yield entity_count_stats
+
 
 @click.group()
 def cli() -> None:
