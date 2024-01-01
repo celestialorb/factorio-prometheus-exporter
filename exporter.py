@@ -176,13 +176,16 @@ def run(metrics_path: str, metrics_port: int) -> None:
     prometheus_client.core.REGISTRY.unregister(prometheus_client.PROCESS_COLLECTOR)
 
     # Register the Factorio collector.
+    LOGGER.info("registering Factorio metrics collector")
     prometheus_client.core.REGISTRY.register(
         FactorioCollector(metrics_path=pathlib.Path(metrics_path)),
     )
 
     # Start the Prometheus server in a thread.
+    LOGGER.info("starting Prometheus HTTP server")
     prometheus_client.start_http_server(metrics_port)
 
+    LOGGER.info("Prometheus HTTP server started, waiting for interruption")
     # Keep looping until we receive an interruption.
     try:
         while True:
