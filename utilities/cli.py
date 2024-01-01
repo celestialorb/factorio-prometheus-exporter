@@ -1,14 +1,27 @@
 #!/usr/bin/python
 """Module defining the entrypoint to the CLI utility for the project."""
 import pathlib
-import shutil
 import tempfile
+import typing
 import zipfile
 
 import click
+import docker
+import git
+import loguru
 
+import factorio
+
+LOGGER = loguru.logger.opt(colors=True)
 MANIFEST = ["info.json", "control.lua"]
 MODNAME = "factorio-prometheus-exporter"
+REPOSITORY = git.Repo(path=__file__, search_parent_directories=True)
+ROOT = pathlib.Path(REPOSITORY.git.rev_parse("--show-toplevel"))
+
+
+def imagename(version: str) -> str:
+    """Return the container image name from the given version."""
+    return f"docker.io/celestialorb/factorio-prometheus-exporter:v{version}"
 
 
 def modname(version: str) -> str:
@@ -21,32 +34,74 @@ def cli() -> None:
     """Entrypoint for the project's CLI utility."""
 
 
-@cli.command()
-@click.option("--deploy", type=click.BOOL, default=False)
-@click.option("--deploy-to", type=click.Path(exists=False))
-@click.option("--version", type=click.STRING, default="0.0.0")
-def package(deploy: bool, deploy_to: pathlib.Path, version: str) -> None:  # noqa: FBT001
-    """Package up the Factorio mod and deploy it to the local server."""
-    with tempfile.NamedTemporaryFile(suffix=".zip") as filename:
-        # Create a zip archive.
-        path = pathlib.Path(filename.name)
-        with zipfile.ZipFile(file=path.absolute, mode="w") as zip_file:
+def package(version: str) -> typing.Tuple[pathlib.Path, str]:
+    """Create the artifacts for the given version."""
+    LOGGER.info("packaging artifacts for v{}", version)
+
+    # Create the Factorio mod zip archive.
+    with tempfile.NamedTemporaryFile(
+        dir=tempfile.gettempdir(),
+        suffix=".zip",
+        delete=False,
+    ) as filename:
+        mod_path = pathlib.Path(filename.name)
+        LOGGER.info("creating Factorio mod zip archive: {}", mod_path)
+        with zipfile.ZipFile(file=mod_path, mode="w") as zip_file:
             for item in MANIFEST:
                 archive_path = pathlib.Path(modname(version)) / item
                 zip_file.write(
                     filename=item,
                     arcname=archive_path,
                 )
-            path.chmod(mode=0o644)
+            mod_path.chmod(mode=0o644)
+        LOGGER.info("<g>successfully created Factorio mod zip archive</g>")
 
-        # If we're not instructed to deploy, simply return as we're done.
-        if not deploy:
-            return
+    # Create the Prometheus exporter container image.
+    client = docker.from_env()
+    name = imagename(version=version)
+    LOGGER.info("building container image: {}", name)
+    client.images.build(
+        dockerfile="Dockerfile",
+        path=str(ROOT),
+        tag=name,
+    )
+    LOGGER.info("<g>successfully built container image</g>")
 
-        # Copy the zip archive to the server.
-        destination = deploy_to / f"{modname(version)}.zip"
-        shutil.copy(src=filename.name, dst=destination)
-        shutil.chown(path=destination, user=845, group=845)
+    # Return the artifacts.
+    return (mod_path, name)
+
+
+@cli.command(name="package")
+@click.option(
+    "--version",
+    type=click.STRING,
+    help="The semantic version of the artifacts.",
+    default="0.0.0",
+)
+def package_cmd(version: str) -> None:
+    package(version=version)
+
+
+@cli.command()
+@click.option(
+    "--version",
+    type=click.STRING,
+    help="The semantic version of the artifacts.",
+    default="0.0.0",
+)
+def publish(version: str) -> None:
+    """Publish the packaged artifacts."""
+    (packaged_mod, image) = package(version=version)
+
+    # Publish the container image to Docker Hub.
+    client = docker.from_env()
+    LOGGER.info("pushing container image: {}", image)
+    client.images.push(repository=image)
+    LOGGER.info("<g>successfully pushed container image: {}</g>", image)
+
+    # Publish the zip archive to Factorio mods.
+    mod = factorio.FactorioMod(name=MODNAME, version=version, archive=packaged_mod)
+    mod.publish()
 
 
 if __name__ == "__main__":
