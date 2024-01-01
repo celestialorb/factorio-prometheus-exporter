@@ -25,7 +25,7 @@ def cli() -> None:
 @click.option("--deploy", type=click.BOOL, default=False)
 @click.option("--deploy-to", type=click.Path(exists=False))
 @click.option("--version", type=click.STRING, default="0.0.0")
-def package(deploy: bool, deploy_to: str, version: str) -> None:
+def package(deploy: bool, deploy_to: str, version: str) -> None:  # noqa: FBT001
     """Package up the Factorio mod and deploy it to the local server."""
     with tempfile.NamedTemporaryFile(suffix=".zip") as filename:
         # Create a zip archive.
