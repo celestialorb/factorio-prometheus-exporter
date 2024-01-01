@@ -1,10 +1,11 @@
 #!/usr/bin/python
 """Module defining the entrypoint to the CLI utility for the project."""
-import click
 import os
 import shutil
 import tempfile
 import zipfile
+
+import click
 
 MANIFEST = ["info.json", "control.lua"]
 MODNAME = "factorio-prometheus-exporter"
