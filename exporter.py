@@ -22,7 +22,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
         """Initialize the collector with the path to the metrics file."""
         self.metrics_path = metrics_path
 
-    def collect(self: FactorioCollector) -> None:
+    def collect(self: FactorioCollector) -> None:  # noqa: C901 (will rework this soon)
         """Collect the Factorio metrics from the mod's output file."""
         with self.metrics_path.open(mode="r", encoding="utf-8") as f:
             data = json.load(f)
