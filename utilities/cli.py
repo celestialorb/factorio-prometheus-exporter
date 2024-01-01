@@ -7,10 +7,9 @@ import zipfile
 
 import click
 import docker
+import factorio
 import git
 import loguru
-
-import factorio
 
 LOGGER = loguru.logger.opt(colors=True)
 MANIFEST = ["info.json", "control.lua"]

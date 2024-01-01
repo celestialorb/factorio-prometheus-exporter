@@ -1,11 +1,11 @@
 """Module defining an interface to the Factorio Mods API."""
 from __future__ import annotations
 
-import requests
-import pathlib
 import os
+import pathlib
 
 import loguru
+import requests
 
 LOGGER = loguru.logger.opt(colors=True)
 
