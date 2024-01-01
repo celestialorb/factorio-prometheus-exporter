@@ -140,7 +140,7 @@ def cli() -> None:
     "--metrics-port",
     type=click.INT,
     default=9102,
-    help="TODO",
+    help="The port to expose the metrics endpoint on.",
 )
 def run(metrics_path: str, metrics_port: int) -> None:
     # Unregister the default collectors.
