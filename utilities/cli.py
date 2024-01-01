@@ -101,6 +101,7 @@ def publish(
     factorio_mod: bool,
 ) -> None:
     """Publish the packaged artifacts."""
+    version = version.strip("v")
     (packaged_mod, image) = package(version=version)
 
     # Publish the container image to Docker Hub.
