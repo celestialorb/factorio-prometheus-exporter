@@ -50,16 +50,16 @@ class FactorioMod:
             data_file.write(json.dumps(info, indent=2) + "\n")
 
         # Create the Factorio mod zip archive.
-        mod_path = pathlib.Path(self.archive.name)
-        LOGGER.info("creating Factorio mod zip archive: {}", mod_path)
-        with zipfile.ZipFile(file=mod_path, mode="w") as zip_file:
+        LOGGER.info("creating Factorio mod zip archive: {}", self.archive)
+        with zipfile.ZipFile(file=self.archive, mode="w") as zip_file:
             for item in FACTORIO_MOD_MANIFEST:
+                LOGGER.debug("adding file to zip archive: {}", item)
                 archive_path = pathlib.Path(self.fullname) / item
                 zip_file.write(
                     filename=item,
                     arcname=archive_path,
                 )
-            mod_path.chmod(mode=0o644)
+            self.archive.chmod(mode=0o644)
         LOGGER.info("<g>successfully created Factorio mod zip archive</g>")
 
     def publish(
@@ -86,6 +86,7 @@ class FactorioMod:
 
         # Grab the upload URL from the initialization response and upload the mod data.
         upload_url = response.json()["upload_url"]
+        LOGGER.info("attempting mod upload: {}", self.archive)
         with self.archive.open(mode="rb") as archive_file:
             response = requests.post(
                 url=upload_url,
@@ -96,7 +97,8 @@ class FactorioMod:
         # Ensure we successfully published the mod.
         if not response.ok:
             LOGGER.error(
-                "unable to publish the Factorio mod: {}",
+                "unable to upload the Factorio mod: {}",
                 response.text,
             )
             return
+        LOGGER.info("<g>successfully uploaded Factorio mod</g>")
