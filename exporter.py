@@ -19,6 +19,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
     metrics_path: str = ""
 
     def __init__(self: FactorioCollector, metrics_path: str) -> None:
+        """Initializes the collector with the path to the metrics file."""
         self.metrics_path = metrics_path
 
     def collect(self: FactorioCollector) -> None:

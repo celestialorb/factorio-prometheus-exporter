@@ -11,12 +11,13 @@ MODNAME = "factorio-prometheus-exporter"
 
 
 def modname(version: str) -> str:
+    """Returns the full artifact modname from the given version."""
     return f"{MODNAME}_{version}"
 
 
 @click.group()
 def cli() -> None:
-    pass
+    """Entrypoint for the project's CLI utility."""
 
 
 @cli.command()
