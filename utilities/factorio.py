@@ -1,17 +1,17 @@
 """Module defining an interface to the Factorio Mods API."""
 from __future__ import annotations
 
+import json
 import os
-import typing
+import pathlib
+import zipfile
 
 import loguru
 import requests
 
-if typing.TYPE_CHECKING:
-    import pathlib
-
 LOGGER = loguru.logger.opt(colors=True)
 
+FACTORIO_MOD_MANIFEST = ["info.json", "control.lua"]
 FACTORIO_MOD_PORTAL_URL = "https://mods.factorio.com"
 
 
@@ -37,6 +37,30 @@ class FactorioMod:
     def fullname(self: FactorioMod) -> str:
         """Return the full name of the Factorio mod with version."""
         return f"{self.name}_{self.version}"
+
+    def package(self: FactorioMod) -> None:
+        """Package the Factorio mod into a zip archive."""
+        # Prepare the info.json file first.
+        info_file = pathlib.Path("info.json")
+        with info_file.open(mode="r+", encoding="utf-8") as data_file:
+            info = json.load(fp=data_file)
+            info["version"] = self.version
+            data_file.seek(0)
+            data_file.truncate()
+            data_file.write(json.dumps(info, indent=2) + "\n")
+
+        # Create the Factorio mod zip archive.
+        mod_path = pathlib.Path(self.archive.name)
+        LOGGER.info("creating Factorio mod zip archive: {}", mod_path)
+        with zipfile.ZipFile(file=mod_path, mode="w") as zip_file:
+            for item in FACTORIO_MOD_MANIFEST:
+                archive_path = pathlib.Path(self.fullname) / item
+                zip_file.write(
+                    filename=item,
+                    arcname=archive_path,
+                )
+            mod_path.chmod(mode=0o644)
+        LOGGER.info("<g>successfully created Factorio mod zip archive</g>")
 
     def publish(
         self: FactorioMod,

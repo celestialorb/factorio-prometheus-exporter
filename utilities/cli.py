@@ -45,16 +45,8 @@ def package(version: str) -> tuple[pathlib.Path, str]:
         delete=False,
     ) as filename:
         mod_path = pathlib.Path(filename.name)
-        LOGGER.info("creating Factorio mod zip archive: {}", mod_path)
-        with zipfile.ZipFile(file=mod_path, mode="w") as zip_file:
-            for item in MANIFEST:
-                archive_path = pathlib.Path(modname(version)) / item
-                zip_file.write(
-                    filename=item,
-                    arcname=archive_path,
-                )
-            mod_path.chmod(mode=0o644)
-        LOGGER.info("<g>successfully created Factorio mod zip archive</g>")
+        mod = factorio.FactorioMod(name=MODNAME, version=version, archive=mod_path)
+        mod.package()
 
     # Create the Prometheus exporter container image.
     client = docker.from_env()
