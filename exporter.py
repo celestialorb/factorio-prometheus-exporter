@@ -1,5 +1,6 @@
 #!/usr/local/bin/python
 """Module defining the entrypoint to the Prometheus exporter."""
+from __future__ import annotations
 import click
 import json
 import prometheus_client
@@ -14,10 +15,10 @@ class FactorioCollector(prometheus_client.registry.Collector):
 
     metrics_path: str = ""
 
-    def __init__(self, metrics_path: str) -> None:
+    def __init__(self: FactorioCollector, metrics_path: str) -> None:
         self.metrics_path = metrics_path
 
-    def collect(self) -> None:
+    def collect(self: FactorioCollector) -> None:
         """Collects the Factorio metrics from the mod's output file."""
         with open(file=self.metrics_path, mode="r", encoding="utf-8") as f:
             data = json.load(f)
