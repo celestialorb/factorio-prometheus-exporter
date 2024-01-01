@@ -7,10 +7,13 @@ import pathlib
 import time
 
 import click
+import loguru
 import prometheus_client
 import prometheus_client.core
 import prometheus_client.metrics_core
 import prometheus_client.registry
+
+LOGGER = loguru.logger.opt(colors=True)
 
 
 class FactorioCollector(prometheus_client.registry.Collector):
@@ -24,8 +27,13 @@ class FactorioCollector(prometheus_client.registry.Collector):
 
     def collect(self: FactorioCollector) -> None:  # noqa: C901 (will rework this soon)
         """Collect the Factorio metrics from the mod's output file."""
+        LOGGER.info(
+            "attempting to load metrics file output from mod: {}",
+            self.metrics_path,
+        )
         with self.metrics_path.open(mode="r", encoding="utf-8") as f:
             data = json.load(f)
+        LOGGER.debug("<g>loaded metrics file output from mod</g>")
 
         # Collect the current game tick.
         yield prometheus_client.metrics_core.GaugeMetricFamily(
@@ -33,6 +41,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
             "The current tick of the running Factorio game.",
             value=data["game"]["time"]["tick"],
         )
+        LOGGER.debug("collected game tick metric: {}", data["game"]["time"]["tick"])
 
         # Collect the player states.
         player_connection_states = prometheus_client.metrics_core.GaugeMetricFamily(
@@ -46,6 +55,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
                 value=int(state["connected"]),
             )
         yield player_connection_states
+        LOGGER.debug("collected player connection state metrics")
 
         # Collect the force statistics.
         force_consumption_stats = prometheus_client.metrics_core.CounterMetricFamily(
@@ -82,8 +92,11 @@ class FactorioCollector(prometheus_client.registry.Collector):
                             value=production["production"],
                         )
         yield force_consumption_stats
+        LOGGER.debug("collected force consumption metrics")
         yield force_production_stats
+        LOGGER.debug("collected force production metrics")
         yield force_research_progress
+        LOGGER.debug("collected force research metrics")
 
         # Collect the pollution production statistics.
         pollution_production_stats = prometheus_client.metrics_core.GaugeMetricFamily(
@@ -94,6 +107,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
         for source, pollution in data["pollution"].items():
             pollution_production_stats.add_metric(labels=[source], value=pollution)
         yield pollution_production_stats
+        LOGGER.debug("collected pollution production metrics")
 
         # Collect the surface metrics.
         surface_pollution_total = prometheus_client.metrics_core.GaugeMetricFamily(
@@ -116,7 +130,9 @@ class FactorioCollector(prometheus_client.registry.Collector):
                 value=surface["ticks_per_day"],
             )
         yield surface_pollution_total
+        LOGGER.debug("collected surface pollution metrics")
         yield surface_ticks_per_day
+        LOGGER.debug("collected surface tick metrics")
 
         # Collect the entity count metrics.
         entity_count_stats = prometheus_client.metrics_core.GaugeMetricFamily(
@@ -131,6 +147,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
                     value=count,
                 )
         yield entity_count_stats
+        LOGGER.debug("collected entity count metrics")
 
 
 @click.group()
@@ -159,13 +176,16 @@ def run(metrics_path: str, metrics_port: int) -> None:
     prometheus_client.core.REGISTRY.unregister(prometheus_client.PROCESS_COLLECTOR)
 
     # Register the Factorio collector.
+    LOGGER.info("registering Factorio metrics collector")
     prometheus_client.core.REGISTRY.register(
         FactorioCollector(metrics_path=pathlib.Path(metrics_path)),
     )
 
     # Start the Prometheus server in a thread.
+    LOGGER.info("starting Prometheus HTTP server")
     prometheus_client.start_http_server(metrics_port)
 
+    LOGGER.info("Prometheus HTTP server started, waiting for interruption")
     # Keep looping until we receive an interruption.
     try:
         while True:
