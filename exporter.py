@@ -1,13 +1,16 @@
 #!/usr/local/bin/python
 """Module defining the entrypoint to the Prometheus exporter."""
 from __future__ import annotations
-import click
+
 import json
+import pathlib
+import time
+
+import click
 import prometheus_client
 import prometheus_client.core
 import prometheus_client.metrics_core
 import prometheus_client.registry
-import time
 
 
 class FactorioCollector(prometheus_client.registry.Collector):
