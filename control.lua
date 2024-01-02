@@ -98,6 +98,7 @@ end
 
 script.on_event(defines.events.on_player_joined_game, update_player_metrics)
 script.on_event(defines.events.on_player_left_game, update_player_metrics)
+script.on_init(update_metrics)
 
 -- TODO: configurable interval
 script.on_nth_tick(60 * 1, update_metrics)
