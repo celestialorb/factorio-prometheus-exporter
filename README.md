@@ -32,6 +32,6 @@ The first is [the Factorio mod](https://mods.factorio.com/mod/factorio-prometheu
 itself that produces a JSON file containing the raw metric data. This will need
 to be installed in your game / server.
 
-The second is [the container image](https://hub.docker.com/repository/docker/celestialorb/factorio-prometheus-exporter/general)
+The second is [the container image](https://github.com/celestialorb/factorio-prometheus-exporter/pkgs/container/factorio-prometheus-exporter)
 that reads in the raw metrics file whenever the Prometheus metrics are
 requested.
