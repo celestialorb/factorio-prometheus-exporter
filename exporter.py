@@ -149,6 +149,29 @@ class FactorioCollector(prometheus_client.registry.Collector):
         yield entity_count_stats
         LOGGER.debug("collected entity count metrics")
 
+        # Collect the rocket launch metrics.
+        rockets_launched_count = prometheus_client.metrics_core.GaugeMetricFamily(
+            name="factorio_rockets_launched",
+            documentation="The total number of rockets launched.",
+            labels=["force"],
+        )
+        items_launched_count = prometheus_client.metrics_core.GaugeMetricFamily(
+            name="factorio_items_launched",
+            documentation="The total number of items launched in rockets.",
+            labels=["force", "name"],
+        )
+        rockets_launched_count.add_metric(
+            labels=["player"],
+            value=data["forces"]["player"]["rockets"]["launches"],
+        )
+        for name, launched in data["forces"]["player"]["rockets"]["items"].items():
+            items_launched_count.add_metric(
+                labels=["player", name],
+                value=launched,
+            )
+        yield rockets_launched_count
+        yield items_launched_count
+
 
 @click.group()
 def cli() -> None:

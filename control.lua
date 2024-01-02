@@ -17,6 +17,15 @@ function write_metrics()
     game.write_file(filename, json .. "\n")
 end
 
+function update_rocket_launch_metrics()
+    metrics["forces"]["player"]["rockets"] = {}
+    metrics["forces"]["player"]["rockets"]["items"] = {}
+    metrics["forces"]["player"]["rockets"]["launches"] = game.forces["player"].rockets_launched
+    for item, count in pairs(game.forces["player"].items_launched) do
+        metrics["forces"]["player"]["rockets"]["items"][item] = count
+    end
+end
+
 function update_research_metrics()
     metrics["forces"]["player"]["research"] = {}
     metrics["forces"]["player"]["research"]["progress"] = game.forces["player"].research_progress
@@ -92,6 +101,7 @@ function update_metrics()
     update_pollution_metrics()
     update_surface_metrics()
     update_research_metrics()
+    update_rocket_launch_metrics()
 
     write_metrics()
 end
