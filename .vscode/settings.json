@@ -3,6 +3,7 @@
         "game",
         "script",
         "defines",
-        "helpers"
+        "helpers",
+        "prototypes"
     ]
 }
