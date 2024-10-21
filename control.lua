@@ -1,5 +1,5 @@
--- Define a global variable containing all of the metric data.
-metrics = {}
+-- Define a variable containing all of the metric data.
+local metrics = {}
 metrics["game"] = {}
 metrics["game"]["time"] = {}
 metrics["game"]["time"]["tick"] = nil
@@ -11,13 +11,13 @@ metrics["pollution"] = {}
 metrics["surfaces"] = {}
 
 
-function write_metrics()
+local function write_metrics()
     local filename = "metrics.json"
     local json = helpers.table_to_json(metrics)
     helpers.write_file(filename, json .. "\n")
 end
 
-function update_rocket_launch_metrics()
+local function update_rocket_launch_metrics()
     metrics["forces"]["player"]["rockets"] = {}
     metrics["forces"]["player"]["rockets"]["items"] = {}
     metrics["forces"]["player"]["rockets"]["launches"] = game.forces["player"].rockets_launched
@@ -26,7 +26,7 @@ function update_rocket_launch_metrics()
     end
 end
 
-function update_research_metrics()
+local function update_research_metrics()
     metrics["forces"]["player"]["research"] = {}
     metrics["forces"]["player"]["research"]["progress"] = game.forces["player"].research_progress
 end
@@ -65,13 +65,11 @@ local function update_item_metrics()
     end
 end
 
-function update_player_metrics()
+local function update_player_metrics()
     for id, player in pairs(game.players) do
         metrics["players"][player.name] = {}
         metrics["players"][player.name]["connected"] = player.connected
     end
-
-    update_time_metrics()
 
     write_metrics()
 end
@@ -89,12 +87,12 @@ local function update_pollution_metrics()
     end
 end
 
-function update_time_metrics()
+local function update_time_metrics()
     metrics["game"]["time"]["tick"] = game.tick
     metrics["game"]["time"]["paused"] = game.tick_paused
 end
 
-function update_surface_metrics()
+local function update_surface_metrics()
     for name, surface in pairs(game.surfaces) do
         metrics["surfaces"][name] = {}
         metrics["surfaces"][name]["pollution"] = surface.get_total_pollution()
@@ -108,7 +106,7 @@ function update_surface_metrics()
     end
 end
 
-function update_metrics()
+local function update_metrics()
     update_time_metrics()
     update_item_metrics()
     update_fluid_metrics()
@@ -121,7 +119,9 @@ function update_metrics()
 end
 
 script.on_event(defines.events.on_player_joined_game, update_player_metrics)
+script.on_event(defines.events.on_player_joined_game, update_time_metrics)
 script.on_event(defines.events.on_player_left_game, update_player_metrics)
+script.on_event(defines.events.on_player_left_game, update_time_metrics)
 script.on_init(update_metrics)
 
 -- TODO: configurable interval
