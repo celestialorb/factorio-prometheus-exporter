@@ -61,36 +61,37 @@ class FactorioCollector(prometheus_client.registry.Collector):
         force_consumption_stats = prometheus_client.metrics_core.CounterMetricFamily(
             name="factorio_force_prototype_consumption",
             documentation="The total consumption of a given prototype for a force.",
-            labels=["force", "prototype", "type"],
+            labels=["force", "prototype", "surface", "type"],
         )
         force_production_stats = prometheus_client.metrics_core.CounterMetricFamily(
             name="factorio_force_prototype_production",
             documentation="The total production of a given prototype for a force.",
-            labels=["force", "prototype", "type"],
+            labels=["force", "prototype", "surface", "type"],
         )
         force_research_progress = prometheus_client.metrics_core.GaugeMetricFamily(
             name="factorio_force_research_progress",
             documentation="The current research progress percentage (0-1) for a force.",
             labels=["force"],
         )
-        for force_name, force_data in data["forces"].items():
-            for type_name, prototypes in force_data.items():
-                if type_name == "research":
-                    force_research_progress.add_metric(
-                        labels=[force_name],
-                        value=force_data["research"]["progress"],
-                    )
+        for surface_name in data["surfaces"].keys():
+            for force_name, force_data in data["forces"].items():
+                for type_name, prototypes in force_data.items():
+                    if type_name == "research":
+                        force_research_progress.add_metric(
+                            labels=[force_name],
+                            value=force_data["research"]["progress"],
+                        )
 
-                if type_name in {"fluids", "items"}:
-                    for prototype_name, production in prototypes.items():
-                        force_consumption_stats.add_metric(
-                            labels=[force_name, prototype_name, type_name],
-                            value=production["consumption"],
-                        )
-                        force_production_stats.add_metric(
-                            labels=[force_name, prototype_name, type_name],
-                            value=production["production"],
-                        )
+                    if type_name in {"fluids", "items"}:
+                        for prototype_name, production in prototypes[surface_name].items():
+                            force_consumption_stats.add_metric(
+                                labels=[force_name, prototype_name, surface_name, type_name],
+                                value=production["consumption"],
+                            )
+                            force_production_stats.add_metric(
+                                labels=[force_name, prototype_name, surface_name, type_name],
+                                value=production["production"],
+                            )
         yield force_consumption_stats
         LOGGER.debug("collected force consumption metrics")
         yield force_production_stats
@@ -102,10 +103,11 @@ class FactorioCollector(prometheus_client.registry.Collector):
         pollution_production_stats = prometheus_client.metrics_core.GaugeMetricFamily(
             name="factorio_pollution_production",
             documentation="The pollution produced or consumed from various sources.",
-            labels=["source"],
+            labels=["source", "surface"],
         )
-        for source, pollution in data["pollution"].items():
-            pollution_production_stats.add_metric(labels=[source], value=pollution)
+        for surface, surface_data in data["pollution"].items():
+            for entity, pollution in surface_data.items():
+                pollution_production_stats.add_metric(labels=[entity, surface], value=pollution)
         yield pollution_production_stats
         LOGGER.debug("collected pollution production metrics")
 

@@ -1,5 +1,5 @@
--- Define a global variable containing all of the metric data.
-metrics = {}
+-- Define a variable containing all of the metric data.
+local metrics = {}
 metrics["game"] = {}
 metrics["game"]["time"] = {}
 metrics["game"]["time"]["tick"] = nil
@@ -11,13 +11,13 @@ metrics["pollution"] = {}
 metrics["surfaces"] = {}
 
 
-function write_metrics()
+local function write_metrics()
     local filename = "metrics.json"
-    local json = game.table_to_json(metrics)
-    game.write_file(filename, json .. "\n")
+    local json = helpers.table_to_json(metrics)
+    helpers.write_file(filename, json .. "\n")
 end
 
-function update_rocket_launch_metrics()
+local function update_rocket_launch_metrics()
     metrics["forces"]["player"]["rockets"] = {}
     metrics["forces"]["player"]["rockets"]["items"] = {}
     metrics["forces"]["player"]["rockets"]["launches"] = game.forces["player"].rockets_launched
@@ -26,61 +26,73 @@ function update_rocket_launch_metrics()
     end
 end
 
-function update_research_metrics()
+local function update_research_metrics()
     metrics["forces"]["player"]["research"] = {}
     metrics["forces"]["player"]["research"]["progress"] = game.forces["player"].research_progress
 end
 
-function update_fluid_metrics()
+local function update_fluid_metrics()
     metrics["forces"]["player"]["fluids"] = {}
-    for name, prototype in pairs(game.fluid_prototypes) do
-        metrics["forces"]["player"]["fluids"][name] = {}
-        metrics["forces"]["player"]["fluids"][name]["consumption"] = game.forces["player"].fluid_production_statistics
-            .get_output_count(name)
-        metrics["forces"]["player"]["fluids"][name]["production"] = game.forces["player"].fluid_production_statistics
-            .get_input_count(name)
+    for surface, _ in pairs(game.surfaces) do
+        metrics["forces"]["player"]["fluids"][surface] = {}
+        for name, _ in pairs(prototypes.fluid) do
+            metrics["forces"]["player"]["fluids"][surface][name] = {}
+            metrics["forces"]["player"]["fluids"][surface][name]["consumption"] = game.forces["player"]
+                .get_fluid_production_statistics(surface)
+                .get_output_count(name)
+            metrics["forces"]["player"]["fluids"][surface][name]["production"] = game.forces["player"]
+                .get_fluid_production_statistics(surface)
+                .get_input_count(name)
+        end
     end
 end
 
-function update_item_metrics()
+local function update_item_metrics()
     metrics["forces"]["player"]["items"] = {}
-    for name, prototype in pairs(game.item_prototypes) do
-        metrics["forces"]["player"]["items"][name] = {}
-        metrics["forces"]["player"]["items"][name]["consumption"] = game.forces["player"].item_production_statistics
-            .get_output_count(
-                name)
-        metrics["forces"]["player"]["items"][name]["production"] = game.forces["player"].item_production_statistics
-            .get_input_count(
-                name)
+    for surface, _ in pairs(game.surfaces) do
+        metrics["forces"]["player"]["items"][surface] = {}
+        for name, _ in pairs(prototypes.item) do
+            metrics["forces"]["player"]["items"][surface][name] = {}
+            metrics["forces"]["player"]["items"][surface][name]["consumption"] = game.forces["player"]
+                .get_item_production_statistics(surface)
+                .get_output_count(
+                    name)
+            metrics["forces"]["player"]["items"][surface][name]["production"] = game.forces["player"]
+                .get_item_production_statistics(surface)
+                .get_input_count(
+                    name)
+        end
     end
 end
 
-function update_player_metrics()
+local function update_player_metrics()
     for id, player in pairs(game.players) do
         metrics["players"][player.name] = {}
         metrics["players"][player.name]["connected"] = player.connected
     end
 
-    update_time_metrics()
-
     write_metrics()
 end
 
-function update_pollution_metrics()
-    for name, value in pairs(game.pollution_statistics.output_counts) do
-        metrics["pollution"][name] = -game.pollution_statistics.get_output_count(name)
-    end
-    for name, value in pairs(game.pollution_statistics.input_counts) do
-        metrics["pollution"][name] = game.pollution_statistics.get_input_count(name)
+local function update_pollution_metrics()
+    for surface, _ in pairs(game.surfaces) do
+        metrics["pollution"][surface] = {}
+        local pollution_statistics = game.get_pollution_statistics(surface)
+        for name, value in pairs(pollution_statistics.output_counts) do
+            metrics["pollution"][surface][name] = -pollution_statistics.get_output_count(name)
+        end
+        for name, value in pairs(pollution_statistics.input_counts) do
+            metrics["pollution"][surface][name] = pollution_statistics.get_input_count(name)
+        end
     end
 end
 
-function update_time_metrics()
+local function update_time_metrics()
     metrics["game"]["time"]["tick"] = game.tick
     metrics["game"]["time"]["paused"] = game.tick_paused
 end
 
-function update_surface_metrics()
+local function update_surface_metrics()
     for name, surface in pairs(game.surfaces) do
         metrics["surfaces"][name] = {}
         metrics["surfaces"][name]["pollution"] = surface.get_total_pollution()
@@ -94,7 +106,7 @@ function update_surface_metrics()
     end
 end
 
-function update_metrics()
+local function update_metrics()
     update_time_metrics()
     update_item_metrics()
     update_fluid_metrics()
@@ -107,7 +119,9 @@ function update_metrics()
 end
 
 script.on_event(defines.events.on_player_joined_game, update_player_metrics)
+script.on_event(defines.events.on_player_joined_game, update_time_metrics)
 script.on_event(defines.events.on_player_left_game, update_player_metrics)
+script.on_event(defines.events.on_player_left_game, update_time_metrics)
 script.on_init(update_metrics)
 
 -- TODO: configurable interval

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pathlib
+import shutil
 import tempfile
 
 import click
@@ -69,9 +70,26 @@ def package(version: str) -> tuple[pathlib.Path, str]:
     help="The semantic version of the artifacts.",
     default="0.0.0",
 )
-def package_cmd(version: str) -> None:
+@click.option(
+    "--install",
+    help="Installs the mod to the local Factorio installation.",
+    type=click.BOOL,
+    is_flag=True,
+    default=False,
+)
+def package_cmd(version: str, install: bool) -> None:
     """Package the artifacts for the Factorio mod."""
-    package(version=version)
+    (modpath, _) = package(version=version)
+
+    # If we're not installing the mod locally, go ahead and return.
+    if not install:
+        LOGGER.warning("skipping local installation")
+        return
+
+    # Copy the zip archive to the local Factorio installation.
+    modzipname = f"factorio-prometheus-exporter_{version}.zip"
+    shutil.copyfile(modpath, pathlib.Path.home() / ".factorio" / "mods" / modzipname)
+    LOGGER.success("installed mod to local Factorio instance")
 
 
 @cli.command()
