@@ -31,14 +31,19 @@ function update_research_metrics()
     metrics["forces"]["player"]["research"]["progress"] = game.forces["player"].research_progress
 end
 
-function update_fluid_metrics()
+local function update_fluid_metrics()
     metrics["forces"]["player"]["fluids"] = {}
-    for name, prototype in pairs(game.fluid_prototypes) do
-        metrics["forces"]["player"]["fluids"][name] = {}
-        metrics["forces"]["player"]["fluids"][name]["consumption"] = game.forces["player"].fluid_production_statistics
-            .get_output_count(name)
-        metrics["forces"]["player"]["fluids"][name]["production"] = game.forces["player"].fluid_production_statistics
-            .get_input_count(name)
+    for surface, _ in pairs(game.surfaces) do
+        metrics["forces"]["player"]["fluids"][surface] = {}
+        for name, _ in pairs(prototypes.fluid) do
+            metrics["forces"]["player"]["fluids"][surface][name] = {}
+            metrics["forces"]["player"]["fluids"][surface][name]["consumption"] = game.forces["player"]
+                .get_fluid_production_statistics(surface)
+                .get_output_count(name)
+            metrics["forces"]["player"]["fluids"][surface][name]["production"] = game.forces["player"]
+                .get_fluid_production_statistics(surface)
+                .get_input_count(name)
+        end
     end
 end
 
