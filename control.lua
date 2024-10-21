@@ -76,12 +76,16 @@ function update_player_metrics()
     write_metrics()
 end
 
-function update_pollution_metrics()
-    for name, value in pairs(game.pollution_statistics.output_counts) do
-        metrics["pollution"][name] = -game.pollution_statistics.get_output_count(name)
-    end
-    for name, value in pairs(game.pollution_statistics.input_counts) do
-        metrics["pollution"][name] = game.pollution_statistics.get_input_count(name)
+local function update_pollution_metrics()
+    for surface, _ in pairs(game.surfaces) do
+        metrics["pollution"][surface] = {}
+        local pollution_statistics = game.get_pollution_statistics(surface)
+        for name, value in pairs(pollution_statistics.output_counts) do
+            metrics["pollution"][surface][name] = -pollution_statistics.get_output_count(name)
+        end
+        for name, value in pairs(pollution_statistics.input_counts) do
+            metrics["pollution"][surface][name] = pollution_statistics.get_input_count(name)
+        end
     end
 end
 
