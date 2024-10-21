@@ -13,8 +13,8 @@ metrics["surfaces"] = {}
 
 function write_metrics()
     local filename = "metrics.json"
-    local json = game.table_to_json(metrics)
-    game.write_file(filename, json .. "\n")
+    local json = helpers.table_to_json(metrics)
+    helpers.write_file(filename, json .. "\n")
 end
 
 function update_rocket_launch_metrics()
