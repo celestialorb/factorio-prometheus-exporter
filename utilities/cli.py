@@ -83,11 +83,13 @@ def package_cmd(version: str, install: bool) -> None:
 
     # If we're not installing the mod locally, go ahead and return.
     if not install:
+        LOGGER.warning("skipping local installation")
         return
 
     # Copy the zip archive to the local Factorio installation.
     modzipname = f"factorio-prometheus-exporter_{version}.zip"
     shutil.copyfile(modpath, pathlib.Path.home() / ".factorio" / "mods" / modzipname)
+    LOGGER.success("installed mod to local Factorio instance")
 
 
 @cli.command()
