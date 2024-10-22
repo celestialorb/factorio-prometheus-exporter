@@ -44,20 +44,21 @@ class FactorioCollector(prometheus_client.registry.Collector):
 
         Returns a boolean value indicating whether or not it was able to read and parse the data.
         """
-        LOGGER.info("Attempting to load metrics file output from mod: {}", self.metrics_path)
+        LOGGER.info("attempting to load metrics file output from mod: {}", self.metrics_path)
         try:
             with self.metrics_path.open(mode="r", encoding="utf-8") as buffer:
                 with self.metrics_lock:
                     self.metrics_data = json.load(buffer)
+                LOGGER.success("loaded metrics file output from mod")
                 return True
         except FileNotFoundError:
-            LOGGER.exception("Metrics file not found: {}", self.metrics_path)
+            LOGGER.exception("metrics file not found: {}", self.metrics_path)
             return False
         except PermissionError:
-            LOGGER.exception("Permission denied while reading file: {}", self.metrics_path)
+            LOGGER.exception("permission denied while reading file: {}", self.metrics_path)
             return False
         except json.JSONDecodeError:
-            LOGGER.exception("Error while parsing JSON in metrics file: {}", self.metrics_path)
+            LOGGER.exception("error while parsing JSON in metrics file: {}", self.metrics_path)
             return False
 
 
