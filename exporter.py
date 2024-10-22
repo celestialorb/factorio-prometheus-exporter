@@ -25,7 +25,8 @@ class FactorioCollector(prometheus_client.registry.Collector):
         """Initialize the collector with the path to the metrics file."""
         self.metrics_path = metrics_path
 
-    def __get_exporter_error_metric(_, is_error: bool) -> prometheus_client.metrics_core.GaugeMetricFamily:
+    @staticmethod
+    def __get_exporter_error_metric(is_error: bool) -> prometheus_client.metrics_core.GaugeMetricFamily:
         return prometheus_client.metrics_core.GaugeMetricFamily(
             "factorio_exporter_error",
             "Indicates if there was an error collecting Factorio metrics.",
