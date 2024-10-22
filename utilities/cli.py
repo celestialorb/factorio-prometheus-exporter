@@ -8,9 +8,10 @@ import tempfile
 
 import click
 import docker
-import factorio
 import git
 import loguru
+
+from utilities import factorio
 
 LOGGER = loguru.logger.opt(colors=True)
 MANIFEST = ["info.json", "control.lua"]
