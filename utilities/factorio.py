@@ -60,7 +60,7 @@ class FactorioMod:
                     arcname=archive_path,
                 )
             self.archive.chmod(mode=0o644)
-        LOGGER.info("<g>successfully created Factorio mod zip archive</g>")
+        LOGGER.success("successfully created Factorio mod zip archive")
 
     def publish(
         self: FactorioMod,
@@ -101,4 +101,4 @@ class FactorioMod:
                 response.text,
             )
             return
-        LOGGER.info("<g>successfully uploaded Factorio mod</g>")
+        LOGGER.success("successfully uploaded Factorio mod")

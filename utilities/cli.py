@@ -57,7 +57,7 @@ def package(version: str) -> tuple[pathlib.Path, str]:
         path=str(ROOT),
         tag=name,
     )
-    LOGGER.info("<g>successfully built container image</g>")
+    LOGGER.success("successfully built container image")
 
     # Return the artifacts.
     return (mod_path, name)
@@ -127,7 +127,7 @@ def publish(
         client = docker.from_env()
         LOGGER.info("pushing container image: {}", image)
         client.images.push(repository=image)
-        LOGGER.info("<g>successfully pushed container image: {}</g>", image)
+        LOGGER.success("successfully pushed container image: {}", image)
 
     # Publish the zip archive to Factorio mods.
     if factorio_mod:
