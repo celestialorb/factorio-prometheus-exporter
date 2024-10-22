@@ -115,6 +115,7 @@ def package_cmd(version: str, install: bool) -> None:
 )
 def publish(
     version: str,
+    *,
     container_image: bool,
     factorio_mod: bool,
 ) -> None:
