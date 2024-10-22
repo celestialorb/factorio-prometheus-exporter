@@ -24,14 +24,14 @@ class FactorioCollector(prometheus_client.registry.Collector):
     def __init__(self: FactorioCollector, metrics_path: pathlib.Path) -> None:
         """Initialize the collector with the path to the metrics file."""
         self.metrics_path = metrics_path
-        
+
     def __get_exporter_error_metric(_, is_error: bool) -> prometheus_client.metrics_core.GaugeMetricFamily:
         return prometheus_client.metrics_core.GaugeMetricFamily(
             "factorio_exporter_error",
             "Indicates if there was an error collecting Factorio metrics.",
             value=(1 if is_error else 0),
-        )    
-        
+        )
+
     def collect(self: FactorioCollector) -> None:  # noqa: C901 (will rework this soon)
         """Collect the Factorio metrics from the mod's output file."""
         LOGGER.info("Attempting to load metrics file output from mod: {}", self.metrics_path)
@@ -50,10 +50,10 @@ class FactorioCollector(prometheus_client.registry.Collector):
             LOGGER.error("Error while parsing JSON in metrics file: {}", self.metrics_path)
             yield self.__get_exporter_error_metric(is_error=True)
             return
-            
+
         # Successfully loaded the Metrics file
         LOGGER.debug("<g>loaded metrics file output from mod</g>")
-        
+
         # Collect the current game tick.
         yield prometheus_client.metrics_core.GaugeMetricFamily(
             "factorio_game_tick",
@@ -192,7 +192,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
             )
         yield rockets_launched_count
         yield items_launched_count
-        
+
         # Indicate all metrics were gathered successfully
         yield self.__get_exporter_error_metric(is_error=False)
 
