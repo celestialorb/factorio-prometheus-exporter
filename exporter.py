@@ -94,7 +94,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
             documentation="The current research progress percentage (0-1) for a force.",
             labels=["force"],
         )
-        for surface_name in data["surfaces"].keys():
+        for surface_name in data["surfaces"]:
             for force_name, force_data in data["forces"].items():
                 for type_name, prototypes in force_data.items():
                     if type_name == "research":
