@@ -12,8 +12,9 @@ import click
 import loguru
 import prometheus_client
 import prometheus_client.core
-import prometheus_client.metrics_core
 import prometheus_client.registry
+
+from prometheus_client.metrics_core import CounterMetricFamily, GaugeMetricFamily
 
 LOGGER = loguru.logger.opt(colors=True)
 
@@ -28,7 +29,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
         self.metrics_path = metrics_path
 
     @staticmethod
-    def __get_exporter_error_metric(is_error: bool) -> prometheus_client.metrics_core.GaugeMetricFamily:
+    def __get_exporter_error_metric(is_error: bool) -> GaugeMetricFamily:
         return prometheus_client.metrics_core.GaugeMetricFamily(
             "factorio_exporter_error",
             "Indicates if there was an error collecting Factorio metrics.",
@@ -58,7 +59,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
         LOGGER.debug("<g>loaded metrics file output from mod</g>")
 
         # Collect the current game tick.
-        yield prometheus_client.metrics_core.GaugeMetricFamily(
+        yield GaugeMetricFamily(
             "factorio_game_tick",
             "The current tick of the running Factorio game.",
             value=data["game"]["time"]["tick"],
@@ -66,7 +67,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
         LOGGER.debug("collected game tick metric: {}", data["game"]["time"]["tick"])
 
         # Collect the player states.
-        player_connection_states = prometheus_client.metrics_core.GaugeMetricFamily(
+        player_connection_states = GaugeMetricFamily(
             "factorio_player_connected",
             "The current connection state of the player.",
             labels=["username"],
@@ -80,17 +81,17 @@ class FactorioCollector(prometheus_client.registry.Collector):
         LOGGER.debug("collected player connection state metrics")
 
         # Collect the force statistics.
-        force_consumption_stats = prometheus_client.metrics_core.CounterMetricFamily(
+        force_consumption_stats = CounterMetricFamily(
             name="factorio_force_prototype_consumption",
             documentation="The total consumption of a given prototype for a force.",
             labels=["force", "prototype", "surface", "type"],
         )
-        force_production_stats = prometheus_client.metrics_core.CounterMetricFamily(
+        force_production_stats = CounterMetricFamily(
             name="factorio_force_prototype_production",
             documentation="The total production of a given prototype for a force.",
             labels=["force", "prototype", "surface", "type"],
         )
-        force_research_progress = prometheus_client.metrics_core.GaugeMetricFamily(
+        force_research_progress = GaugeMetricFamily(
             name="factorio_force_research_progress",
             documentation="The current research progress percentage (0-1) for a force.",
             labels=["force"],
@@ -122,7 +123,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
         LOGGER.debug("collected force research metrics")
 
         # Collect the pollution production statistics.
-        pollution_production_stats = prometheus_client.metrics_core.GaugeMetricFamily(
+        pollution_production_stats = GaugeMetricFamily(
             name="factorio_pollution_production",
             documentation="The pollution produced or consumed from various sources.",
             labels=["source", "surface"],
@@ -134,12 +135,12 @@ class FactorioCollector(prometheus_client.registry.Collector):
         LOGGER.debug("collected pollution production metrics")
 
         # Collect the surface metrics.
-        surface_pollution_total = prometheus_client.metrics_core.GaugeMetricFamily(
+        surface_pollution_total = GaugeMetricFamily(
             name="factorio_surface_pollution_total",
             documentation="The total pollution on a given surface.",
             labels=["surface"],
         )
-        surface_ticks_per_day = prometheus_client.metrics_core.GaugeMetricFamily(
+        surface_ticks_per_day = GaugeMetricFamily(
             name="factorio_surface_ticks_per_day",
             documentation="The number of ticks per day on a given surface.",
             labels=["surface"],
@@ -159,7 +160,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
         LOGGER.debug("collected surface tick metrics")
 
         # Collect the entity count metrics.
-        entity_count_stats = prometheus_client.metrics_core.GaugeMetricFamily(
+        entity_count_stats = GaugeMetricFamily(
             name="factorio_entity_count",
             documentation="The total number of entities.",
             labels=["force", "name", "surface"],
@@ -174,12 +175,12 @@ class FactorioCollector(prometheus_client.registry.Collector):
         LOGGER.debug("collected entity count metrics")
 
         # Collect the rocket launch metrics.
-        rockets_launched_count = prometheus_client.metrics_core.GaugeMetricFamily(
+        rockets_launched_count = GaugeMetricFamily(
             name="factorio_rockets_launched",
             documentation="The total number of rockets launched.",
             labels=["force"],
         )
-        items_launched_count = prometheus_client.metrics_core.GaugeMetricFamily(
+        items_launched_count = GaugeMetricFamily(
             name="factorio_items_launched",
             documentation="The total number of items launched in rockets.",
             labels=["force", "name"],
