@@ -30,7 +30,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
         return prometheus_client.metrics_core.GaugeMetricFamily(
             "factorio_exporter_error",
             "Indicates if there was an error collecting Factorio metrics.",
-            value=(1 if is_error else 0),
+            value=int(is_error),
         )
 
     def collect(self: FactorioCollector) -> None:  # noqa: C901 (will rework this soon)
