@@ -4,7 +4,8 @@
         "script",
         "defines",
         "helpers",
-        "prototypes"
+        "prototypes",
+        "log"
     ],
     "[lua]": {
         "editor.formatOnSave": true,
