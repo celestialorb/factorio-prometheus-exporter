@@ -1,5 +1,6 @@
 #!/usr/bin/python
 """Module defining the entrypoint to the CLI utility for the project."""
+
 from __future__ import annotations
 
 import pathlib
@@ -11,7 +12,7 @@ import docker
 import git
 import loguru
 
-from utilities import factorio
+from .factorio import FactorioMod
 
 LOGGER = loguru.logger.opt(colors=True)
 MANIFEST = ["info.json", "control.lua"]
@@ -46,7 +47,7 @@ def package(version: str) -> tuple[pathlib.Path, str]:
         delete=False,
     ) as filename:
         mod_path = pathlib.Path(filename.name)
-        mod = factorio.FactorioMod(name=MODNAME, version=version, archive=mod_path)
+        mod = FactorioMod(name=MODNAME, version=version, archive=mod_path)
         mod.package()
 
     # Create the Prometheus exporter container image.
@@ -133,7 +134,7 @@ def publish(
 
     # Publish the zip archive to Factorio mods.
     if factorio_mod:
-        mod = factorio.FactorioMod(name=MODNAME, version=version, archive=packaged_mod)
+        mod = FactorioMod(name=MODNAME, version=version, archive=packaged_mod)
         mod.publish()
 
 
