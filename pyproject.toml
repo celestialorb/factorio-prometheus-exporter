@@ -1,4 +1,5 @@
-[tool.ruff]
+[tool.ruff.lint]
+select = ["ALL"]
 ignore = [
-    "PLE1205",  # Loguru uses template strings, so this error is not applicable.
+    "PLE1205", # Loguru uses template strings, so this error is not applicable.
 ]
