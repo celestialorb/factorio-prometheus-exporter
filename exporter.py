@@ -1,5 +1,6 @@
 #!/usr/local/bin/python
 """Module defining the entrypoint to the Prometheus exporter."""
+
 from __future__ import annotations
 
 import json
