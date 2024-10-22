@@ -23,6 +23,7 @@
         "editor.formatOnSave": true,
         "editor.rulers": [
             120
-        ]
+        ],
+        "editor.defaultFormatter": "charliermarsh.ruff"
     }
 }
