@@ -41,15 +41,15 @@ class FactorioCollector(prometheus_client.registry.Collector):
             with self.metrics_path.open(mode="r", encoding="utf-8") as buffer:
                 data = json.load(buffer)
         except FileNotFoundError:
-            LOGGER.error("Metrics file not found: {}", self.metrics_path)
+            LOGGER.exception("Metrics file not found: {}", self.metrics_path)
             yield self.__get_exporter_error_metric(is_error=True)
             return
         except PermissionError:
-            LOGGER.error("Permission denied while reading file: {}", self.metrics_path)
+            LOGGER.exception("Permission denied while reading file: {}", self.metrics_path)
             yield self.__get_exporter_error_metric(is_error=True)
             return
         except json.JSONDecodeError:
-            LOGGER.error("Error while parsing JSON in metrics file: {}", self.metrics_path)
+            LOGGER.exception("Error while parsing JSON in metrics file: {}", self.metrics_path)
             yield self.__get_exporter_error_metric(is_error=True)
             return
 
