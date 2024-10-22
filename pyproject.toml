@@ -7,4 +7,6 @@ ignore = [
     "D203",    # Incompatible with D211.
     "D213",    # Incompatible with D212.
     "PLE1205", # Loguru uses template strings, so this error is not applicable.
+    "COM812",  # Incompatible with Ruff formatter.
+    "ISC001",  # Incompatible with Ruff formatter.
 ]
