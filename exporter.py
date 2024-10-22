@@ -21,10 +21,14 @@ LOGGER = loguru.logger.opt(colors=True)
 class FactorioCollector(prometheus_client.registry.Collector):
     """Collector for the Factorio metrics."""
 
-    metrics_path: pathlib.Path = None
+    metrics_data: dict
+    metrics_lock: threading.Lock
+    metrics_path: pathlib.Path
 
     def __init__(self: FactorioCollector, metrics_path: pathlib.Path) -> None:
         """Initialize the collector with the path to the metrics file."""
+        self.metrics_data = {}
+        self.metrics_lock = threading.Lock()
         self.metrics_path = metrics_path
 
     @staticmethod
