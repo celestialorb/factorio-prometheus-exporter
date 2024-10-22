@@ -5,5 +5,22 @@
         "defines",
         "helpers",
         "prototypes"
-    ]
+    ],
+    "[lua]": {
+        "editor.quickSuggestions": {
+            "comments": "inline",
+            "other": "on",
+            "strings": "on"
+        },
+        "editor.semanticHighlighting.enabled": true,
+        "editor.rulers": [
+            80,
+            90
+        ]
+    },
+    "[python]": {
+        "editor.rulers": [
+            120
+        ]
+    }
 }
