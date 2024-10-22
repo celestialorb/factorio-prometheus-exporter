@@ -39,8 +39,8 @@ class FactorioCollector(prometheus_client.registry.Collector):
         """Collect the Factorio metrics from the mod's output file."""
         LOGGER.info("Attempting to load metrics file output from mod: {}", self.metrics_path)
         try:
-            with self.metrics_path.open(mode="r", encoding="utf-8") as f:
-                data = json.load(f)
+            with self.metrics_path.open(mode="r", encoding="utf-8") as buffer:
+                data = json.load(buffer)
         except FileNotFoundError:
             LOGGER.error("Metrics file not found: {}", self.metrics_path)
             yield self.__get_exporter_error_metric(is_error=True)
