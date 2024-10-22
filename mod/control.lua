@@ -17,6 +17,11 @@ local function write_metrics()
     helpers.write_file(filename, json .. "\n")
 end
 
+local function update_time_metrics()
+    metrics["game"]["time"]["tick"] = game.tick
+    metrics["game"]["time"]["paused"] = game.tick_paused
+end
+
 local function update_rocket_launch_metrics()
     metrics["forces"]["player"]["rockets"] = {}
     metrics["forces"]["player"]["rockets"]["items"] = {}
@@ -71,6 +76,8 @@ local function update_player_metrics()
         metrics["players"][player.name]["connected"] = player.connected
     end
 
+    update_time_metrics()
+
     write_metrics()
 end
 
@@ -85,11 +92,6 @@ local function update_pollution_metrics()
             metrics["pollution"][surface][name] = pollution_statistics.get_input_count(name)
         end
     end
-end
-
-local function update_time_metrics()
-    metrics["game"]["time"]["tick"] = game.tick
-    metrics["game"]["time"]["paused"] = game.tick_paused
 end
 
 local function update_surface_metrics()
@@ -108,6 +110,7 @@ end
 
 local function update_metrics()
     update_time_metrics()
+    update_player_metrics()
     update_item_metrics()
     update_fluid_metrics()
     update_pollution_metrics()
@@ -121,9 +124,9 @@ end
 log("prometheus exporter mod setup starting")
 
 script.on_event(defines.events.on_player_joined_game, update_player_metrics)
-script.on_event(defines.events.on_player_joined_game, update_time_metrics)
 script.on_event(defines.events.on_player_left_game, update_player_metrics)
-script.on_event(defines.events.on_player_left_game, update_time_metrics)
+script.on_event(defines.events.on_player_created, update_player_metrics)
+script.on_event(defines.events.on_player_removed, update_player_metrics)
 script.on_init(update_metrics)
 
 local update_rate = settings.startup["prometheus-exporter-metrics-update-every-nth-tick"].value
