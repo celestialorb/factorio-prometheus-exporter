@@ -1,4 +1,5 @@
 """Module defining an interface to the Factorio Mods API."""
+
 from __future__ import annotations
 
 import json
@@ -11,7 +12,7 @@ import requests
 
 LOGGER = loguru.logger.opt(colors=True)
 
-FACTORIO_MOD_MANIFEST = ["info.json", "control.lua"]
+FACTORIO_MOD_ROOT = pathlib.Path(__file__).parent.parent.absolute() / "mod"
 FACTORIO_MOD_PORTAL_URL = "https://mods.factorio.com"
 
 
@@ -41,7 +42,7 @@ class FactorioMod:
     def package(self: FactorioMod) -> None:
         """Package the Factorio mod into a zip archive."""
         # Prepare the info.json file first.
-        info_file = pathlib.Path("info.json")
+        info_file = pathlib.Path(FACTORIO_MOD_ROOT / "info.json")
         with info_file.open(mode="r+", encoding="utf-8") as data_file:
             info = json.load(fp=data_file)
             info["version"] = self.version
@@ -49,18 +50,23 @@ class FactorioMod:
             data_file.truncate()
             data_file.write(json.dumps(info, indent=2) + "\n")
 
+        # Create a manifest of all files located under the `mod` directory.
+        manifest = FACTORIO_MOD_ROOT.glob(pattern="**/*")
+        manifest = filter(lambda entry: entry.is_file(), manifest)
+        manifest = [entry.relative_to(FACTORIO_MOD_ROOT) for entry in manifest]
+
         # Create the Factorio mod zip archive.
         LOGGER.info("creating Factorio mod zip archive: {}", self.archive)
         with zipfile.ZipFile(file=self.archive, mode="w") as zip_file:
-            for item in FACTORIO_MOD_MANIFEST:
+            for item in manifest:
                 LOGGER.debug("adding file to zip archive: {}", item)
                 archive_path = pathlib.Path(self.fullname) / item
                 zip_file.write(
-                    filename=item,
+                    filename=FACTORIO_MOD_ROOT / item,
                     arcname=archive_path,
                 )
             self.archive.chmod(mode=0o644)
-        LOGGER.info("<g>successfully created Factorio mod zip archive</g>")
+        LOGGER.success("successfully created Factorio mod zip archive")
 
     def publish(
         self: FactorioMod,
@@ -101,4 +107,4 @@ class FactorioMod:
                 response.text,
             )
             return
-        LOGGER.info("<g>successfully uploaded Factorio mod</g>")
+        LOGGER.success("successfully uploaded Factorio mod")

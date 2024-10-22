@@ -1,5 +1,6 @@
 #!/usr/bin/python
 """Module defining the entrypoint to the CLI utility for the project."""
+
 from __future__ import annotations
 
 import pathlib
@@ -8,12 +9,12 @@ import tempfile
 
 import click
 import docker
-import factorio
 import git
 import loguru
 
+from .factorio import FactorioMod
+
 LOGGER = loguru.logger.opt(colors=True)
-MANIFEST = ["info.json", "control.lua"]
 MODNAME = "factorio-prometheus-exporter"
 REPOSITORY = git.Repo(path=__file__, search_parent_directories=True)
 ROOT = pathlib.Path(REPOSITORY.git.rev_parse("--show-toplevel"))
@@ -45,7 +46,7 @@ def package(version: str) -> tuple[pathlib.Path, str]:
         delete=False,
     ) as filename:
         mod_path = pathlib.Path(filename.name)
-        mod = factorio.FactorioMod(name=MODNAME, version=version, archive=mod_path)
+        mod = FactorioMod(name=MODNAME, version=version, archive=mod_path)
         mod.package()
 
     # Create the Prometheus exporter container image.
@@ -57,7 +58,7 @@ def package(version: str) -> tuple[pathlib.Path, str]:
         path=str(ROOT),
         tag=name,
     )
-    LOGGER.info("<g>successfully built container image</g>")
+    LOGGER.success("successfully built container image")
 
     # Return the artifacts.
     return (mod_path, name)
@@ -77,7 +78,7 @@ def package(version: str) -> tuple[pathlib.Path, str]:
     is_flag=True,
     default=False,
 )
-def package_cmd(version: str, install: bool) -> None:
+def package_cmd(version: str, *, install: bool) -> None:
     """Package the artifacts for the Factorio mod."""
     (modpath, _) = package(version=version)
 
@@ -115,6 +116,7 @@ def package_cmd(version: str, install: bool) -> None:
 )
 def publish(
     version: str,
+    *,
     container_image: bool,
     factorio_mod: bool,
 ) -> None:
@@ -127,11 +129,11 @@ def publish(
         client = docker.from_env()
         LOGGER.info("pushing container image: {}", image)
         client.images.push(repository=image)
-        LOGGER.info("<g>successfully pushed container image: {}</g>", image)
+        LOGGER.success("successfully pushed container image: {}", image)
 
     # Publish the zip archive to Factorio mods.
     if factorio_mod:
-        mod = factorio.FactorioMod(name=MODNAME, version=version, archive=packaged_mod)
+        mod = FactorioMod(name=MODNAME, version=version, archive=packaged_mod)
         mod.publish()
 
 

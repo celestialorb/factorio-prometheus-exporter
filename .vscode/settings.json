@@ -4,6 +4,29 @@
         "script",
         "defines",
         "helpers",
-        "prototypes"
-    ]
+        "prototypes",
+        "log",
+        "data",
+        "settings"
+    ],
+    "[lua]": {
+        "editor.formatOnSave": true,
+        "editor.quickSuggestions": {
+            "comments": "inline",
+            "other": "on",
+            "strings": "on"
+        },
+        "editor.semanticHighlighting.enabled": true,
+        "editor.rulers": [
+            80,
+            90
+        ]
+    },
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.rulers": [
+            120
+        ],
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    }
 }
