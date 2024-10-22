@@ -6,6 +6,8 @@ import json
 import pathlib
 import time
 
+from typing import Any, Generator
+
 import click
 import loguru
 import prometheus_client
@@ -33,7 +35,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
             value=int(is_error),
         )
 
-    def collect(self: FactorioCollector) -> None:  # noqa: C901 (will rework this soon)
+    def collect(self: FactorioCollector) -> Generator[Any, Any, Any]:
         """Collect the Factorio metrics from the mod's output file."""
         LOGGER.info("Attempting to load metrics file output from mod: {}", self.metrics_path)
         try:
