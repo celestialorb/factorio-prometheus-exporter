@@ -32,31 +32,34 @@ class FactorioCollector(prometheus_client.registry.Collector):
         self.metrics_path = metrics_path
 
     @staticmethod
-    def __get_exporter_error_metric(*, is_error: bool) -> GaugeMetricFamily:
+    def __get_exporter_error_metric(*, successful: bool) -> GaugeMetricFamily:
         return prometheus_client.metrics_core.GaugeMetricFamily(
             "factorio_exporter_error",
             "Indicates if there was an error collecting Factorio metrics.",
-            value=int(is_error),
+            value=int(not successful),
         )
 
-    def collect(self: FactorioCollector) -> Generator[Any, Any, Any]:
-        """Collect the Factorio metrics from the mod's output file."""
+    def __load_metrics_data(self: FactorioCollector) -> bool:
+        """Read in the Factorio metric data produced by the mod.
+
+        Returns a boolean value indicating whether or not it was able to read and parse the data.
+        """
         LOGGER.info("Attempting to load metrics file output from mod: {}", self.metrics_path)
         try:
             with self.metrics_path.open(mode="r", encoding="utf-8") as buffer:
-                data = json.load(buffer)
+                with self.metrics_lock:
+                    self.metrics_data = json.load(buffer)
+                return True
         except FileNotFoundError:
             LOGGER.exception("Metrics file not found: {}", self.metrics_path)
-            yield self.__get_exporter_error_metric(is_error=True)
-            return
+            return False
         except PermissionError:
             LOGGER.exception("Permission denied while reading file: {}", self.metrics_path)
-            yield self.__get_exporter_error_metric(is_error=True)
-            return
+            return False
         except json.JSONDecodeError:
             LOGGER.exception("Error while parsing JSON in metrics file: {}", self.metrics_path)
-            yield self.__get_exporter_error_metric(is_error=True)
-            return
+            return False
+
 
         # Successfully loaded the Metrics file
         LOGGER.success("loaded metrics file output from mod")
@@ -201,7 +204,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
         yield items_launched_count
 
         # Indicate all metrics were successfully gathered.
-        yield self.__get_exporter_error_metric(is_error=False)
+        yield self.__get_exporter_error_metric(successful=True)
 
 
 @click.group()
