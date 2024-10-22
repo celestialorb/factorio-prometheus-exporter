@@ -78,7 +78,7 @@ def package(version: str) -> tuple[pathlib.Path, str]:
     is_flag=True,
     default=False,
 )
-def package_cmd(version: str, install: bool) -> None:
+def package_cmd(version: str, *, install: bool) -> None:
     """Package the artifacts for the Factorio mod."""
     (modpath, _) = package(version=version)
 
