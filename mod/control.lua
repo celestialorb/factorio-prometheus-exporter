@@ -102,7 +102,7 @@ local function update_surface_metrics()
 
         metrics["surfaces"][name]["entities"] = {}
         setmetatable(metrics["surfaces"][name]["entities"], { __index = function() return 0 end })
-        for id, entity in pairs(surface.find_entities_filtered { force = "player" }) do
+        for _, entity in pairs(surface.find_entities_filtered { force = "player" }) do
             metrics["surfaces"][name]["entities"][entity.name] = 1 + metrics["surfaces"][name]["entities"][entity.name]
         end
     end
