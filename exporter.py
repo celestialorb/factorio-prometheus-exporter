@@ -56,7 +56,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
             return
 
         # Successfully loaded the Metrics file
-        LOGGER.debug("<g>loaded metrics file output from mod</g>")
+        LOGGER.success("loaded metrics file output from mod")
 
         # Collect the current game tick.
         yield GaugeMetricFamily(
