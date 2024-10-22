@@ -118,11 +118,14 @@ local function update_metrics()
     write_metrics()
 end
 
+log("prometheus exporter mod setup starting")
+
 script.on_event(defines.events.on_player_joined_game, update_player_metrics)
 script.on_event(defines.events.on_player_joined_game, update_time_metrics)
 script.on_event(defines.events.on_player_left_game, update_player_metrics)
 script.on_event(defines.events.on_player_left_game, update_time_metrics)
 script.on_init(update_metrics)
 
--- TODO: configurable interval
-script.on_nth_tick(60 * 1, update_metrics)
+local update_rate = settings.startup["prometheus-exporter-metrics-update-every-nth-tick"].value
+script.on_nth_tick(update_rate, update_metrics)
+log("prometheus exporter mod setup completed")

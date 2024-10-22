@@ -5,7 +5,9 @@
         "defines",
         "helpers",
         "prototypes",
-        "log"
+        "log",
+        "data",
+        "settings"
     ],
     "[lua]": {
         "editor.formatOnSave": true,

@@ -15,7 +15,6 @@ import loguru
 from .factorio import FactorioMod
 
 LOGGER = loguru.logger.opt(colors=True)
-MANIFEST = ["info.json", "control.lua"]
 MODNAME = "factorio-prometheus-exporter"
 REPOSITORY = git.Repo(path=__file__, search_parent_directories=True)
 ROOT = pathlib.Path(REPOSITORY.git.rev_parse("--show-toplevel"))
