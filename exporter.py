@@ -194,7 +194,7 @@ class FactorioCollector(prometheus_client.registry.Collector):
         yield rockets_launched_count
         yield items_launched_count
 
-        # Indicate all metrics were gathered successfully
+        # Indicate all metrics were successfully gathered.
         yield self.__get_exporter_error_metric(is_error=False)
 
 
