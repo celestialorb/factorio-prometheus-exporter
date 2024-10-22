@@ -219,6 +219,10 @@ class FactorioCollector(prometheus_client.registry.Collector):
         success = self.__load_metrics_data()
         yield self.__get_exporter_error_metric(successful=success)
 
+        # If we weren't able to load the metric data, go ahead and return.
+        if not success:
+            return
+
         LOGGER.debug("locking metrics data")
         with self.metrics_lock:
             LOGGER.debug("collecting metrics")
