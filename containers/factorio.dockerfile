@@ -10,9 +10,12 @@ RUN usermod --uid 1000 factorio
 RUN groupmod --gid 1000 factorio
 RUN chown -R factorio:factorio /factorio /opt/factorio
 RUN usermod --shell /bin/zsh factorio
+RUN mkhomedir_helper factorio
+
+# Setup additional tooling for the project.
+RUN apt install --assume-yes python3 python3-pip
 
 # Setup the Factorio user.
-RUN mkhomedir_helper factorio
 USER factorio
 RUN mkdir --parents ${HOME}/.config
 RUN echo 'eval "$(starship init zsh)"' >> ${HOME}/.zshrc
