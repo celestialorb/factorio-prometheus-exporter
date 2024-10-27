@@ -9,11 +9,11 @@ import threading
 import time
 from typing import Any, Generator
 
-import click
 import loguru
 import prometheus_client
 import prometheus_client.core
 import prometheus_client.registry
+import rich_click as click
 from prometheus_client.metrics_core import CounterMetricFamily, GaugeMetricFamily
 
 LOGGER = loguru.logger.opt(colors=True)
