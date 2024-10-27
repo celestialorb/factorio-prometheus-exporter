@@ -7,10 +7,10 @@ import pathlib
 import shutil
 import tempfile
 
-import click
 import docker
 import git
 import loguru
+import rich_click as click
 
 from .factorio import FactorioMod
 
