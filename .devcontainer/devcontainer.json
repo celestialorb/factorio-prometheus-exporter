@@ -13,16 +13,10 @@
   // "features": {},
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [
-    34197
-  ],
+  "forwardPorts": [34197],
   "customizations": {
     "vscode": {
-      "extensions": [
-        "charliermarsh.ruff",
-        "sumneko.lua",
-        "eamodio.gitlens"
-      ]
+      "extensions": ["charliermarsh.ruff", "sumneko.lua", "eamodio.gitlens"]
     }
   }
 
