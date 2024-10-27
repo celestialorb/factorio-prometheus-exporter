@@ -14,6 +14,11 @@ RUN mkhomedir_helper factorio
 
 # Setup additional tooling for the project.
 RUN apt install --assume-yes python3 python3-pip
+COPY dev.requirements.txt /tmp/dev.requirements.txt
+COPY requirements.txt /tmp/requirements.txt
+RUN pip3 install --break-system-packages \
+  --requirement /tmp/dev.requirements.txt \
+  --requirement /tmp/requirements.txt
 
 # Setup the Factorio user.
 USER factorio
