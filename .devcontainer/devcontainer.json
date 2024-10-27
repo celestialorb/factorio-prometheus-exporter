@@ -12,6 +12,10 @@
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},
 
+  "remoteEnv": {
+    "PYTHONPATH": "${containerWorkspaceFolder}"
+  },
+
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [34197],
   "customizations": {

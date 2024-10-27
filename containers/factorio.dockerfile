@@ -23,7 +23,8 @@ RUN usermod --shell /bin/zsh factorio
 RUN mkhomedir_helper factorio
 USER factorio
 RUN mkdir --parents ${HOME}/.config
-RUN echo 'eval "$(starship init zsh)"' >> ${HOME}/.zshrc
+COPY containers/tweaks.zshrc /tmp/tweaks.zshrc
+RUN cat /tmp/tweaks.zshrc >> ${HOME}/.zshrc
 RUN starship preset gruvbox-rainbow --output ${HOME}/.config/starship.toml
 
 ENTRYPOINT [ "/bin/zsh" ]
