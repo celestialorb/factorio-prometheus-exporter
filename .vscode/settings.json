@@ -23,6 +23,9 @@
         ]
     },
     "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports.ruff": "explicit"
+        },
         "editor.formatOnSave": true,
         "editor.rulers": [
             120
