@@ -22,7 +22,7 @@ Basic help with usage can be obtained via the `--help` flag:
 
 `/opt/exporter/exporter.py --help` or `/opt/exporter/exporter.py run --help`
 
-```sh
+```text
 $ /opt/exporter/exporter.py run --help
                                                                                                                               
  Usage: exporter.py run [OPTIONS]                                                                                             
