@@ -16,7 +16,7 @@ that sends RCON commands and reads the RCON responses is publicly available for 
 
 Parameters can be supplied to the Prometheus exporter process via the CLI or by
 environment variables. Usage of the CLI parameters is encouraged over
-enviroment variables with the exception of the RCON password parameter.
+environment variables with the exception of the RCON password parameter.
 
 Basic help with usage can be obtained via the `--help` flag:
 
