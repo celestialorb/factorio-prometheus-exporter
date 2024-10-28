@@ -24,18 +24,18 @@ Basic help with usage can be obtained via the `--help` flag:
 
 ```sh
 $ /opt/exporter/exporter.py run --help
-                                                                                              
- Usage: exporter.py run [OPTIONS]                                                             
-                                                                                              
- Start the Factorio Prometheus exporter.                                                      
-                                                                                              
-╭─ Options ──────────────────────────────────────────────────────────────────────────────────╮
-│ --metrics-port     INTEGER  The port to expose the metrics endpoint on.                    │
-│ --rcon-address     TEXT     The address for the Factorio server.                           │
-│ --rcon-port        INTEGER  The RCON port for the Factorio server.                         │
-│ --rcon-password    TEXT     The RCON password for the server.                              │
-│ --help                      Show this message and exit.                                    │
-╰────────────────────────────────────────────────────────────────────────────────────────────╯
+                                                                                                                              
+ Usage: exporter.py run [OPTIONS]                                                                                             
+                                                                                                                              
+ Start the Factorio Prometheus exporter.                                                                                      
+                                                                                                                              
+╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --metrics-port     INTEGER  The port to expose the metrics endpoint on, defaults to 9102.                                  │
+│ --rcon-address     TEXT     The address for the Factorio server, defaults to localhost.                                    │
+│ --rcon-port        INTEGER  The RCON port for the Factorio server, defaults to 27015.                                      │
+│ --rcon-password    TEXT     The RCON password for the server, defaults to attempting to read it from the local config.     │
+│ --help                      Show this message and exit.                                                                    │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 #### Example Usage

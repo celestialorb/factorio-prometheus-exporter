@@ -50,28 +50,28 @@ def cli() -> None:
 @cli.command()
 @click.option(
     "--metrics-port",
+    help="The port to expose the metrics endpoint on, defaults to 9102.",
     type=click.INT,
     default=9102,
-    help="The port to expose the metrics endpoint on.",
 )
 @click.option(
     "--rcon-address",
+    help="The address for the Factorio server, defaults to localhost.",
     type=click.STRING,
-    help="The address for the Factorio server.",
     default="localhost",
     required=False,
 )
 @click.option(
     "--rcon-port",
+    help="The RCON port for the Factorio server, defaults to 27015.",
     type=click.INT,
-    help="The RCON port for the Factorio server.",
     default=27015,
     required=False,
 )
 @click.option(
     "--rcon-password",
     type=click.STRING,
-    help="The RCON password for the server.",
+    help="The RCON password for the server, defaults to attempting to read it from the local config.",
     required=False,
 )
 def run(metrics_port: int, rcon_address: str, rcon_port: int, rcon_password: str | None) -> None:
