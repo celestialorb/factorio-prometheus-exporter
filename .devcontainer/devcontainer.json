@@ -17,10 +17,15 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [34197],
+  "appPort": ["9102:9102/tcp", "27015:27015/tcp", "34197:34197/udp"],
   "customizations": {
     "vscode": {
-      "extensions": ["charliermarsh.ruff", "sumneko.lua", "eamodio.gitlens"]
+      "extensions": [
+        "charliermarsh.ruff",
+        "sumneko.lua",
+        "eamodio.gitlens",
+        "yzhang.markdown-all-in-one"
+      ]
     }
   }
 
