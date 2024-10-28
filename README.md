@@ -19,9 +19,12 @@ Below is a table of metrics that are exported in this version of the exporter.
 | `factorio_force_prototype_production_total`  | `force`, `prototype`, `surface`, `type` | The total production of prototypes for a force.                                         |
 | `factorio_force_research_progress`           | `force`                                 | The current research progress percentage (0-1) for a given force.                       |
 | `factorio_game_tick`                         | N/A                                     | The game tick the metrics were recorded at.                                             |
+| `factorio_game_ticks_played`                 | N/A                                     | The number of ticks executed of the running Factorio game.                              |
+| `factorio_game_ticks_paused`                 | N/A                                     | Whether or not the game is currently paused.                                            |
 | `factorio_items_launched`                    | `force`, `name`                         | The total number of items launched for a force.                                         |
 | `factorio_player_connected`                  | `username`                              | Whether or not the player is connected.                                                 |
-| `factorio_pollution_production`              | `source`, `surface`                     | The current pollution production (or consumption if negative) total for a given source. |
+| `factorio_pollution_consumption`             | `source`, `surface`                     | The current pollution consumption total for a given source on a surface.                |
+| `factorio_pollution_production`              | `source`, `surface`                     | The current pollution production total for a given source on a surface.                 |
 | `factorio_rockets_launched`                  | `force`                                 | The total number of rockets launched for a force.                                       |
 | `factorio_surface_pollution_total`           | `surface`                               | The total pollution across the surface.                                                 |
 | `factorio_surface_ticks_per_day`             | `surface`                               | The total number of ticks per day across the surface.                                   |
