@@ -1,4 +1,5 @@
 FROM docker.io/library/python:3-slim
+LABEL org.opencontainers.image.description A Prometheus exporter for a Factorio server.
 
 RUN useradd --create-home --shell /bin/bash exporter
 RUN mkdir --parents /opt/exporter
