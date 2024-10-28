@@ -38,6 +38,13 @@ $ /opt/exporter/exporter.py run --help
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
+#### Logging
+
+This project makes use of [`loguru`](https://github.com/Delgan/loguru) as the
+logging solution. The logging level can be controlled via the `LOGURU_LEVEL`
+environment variable. For example, to set the logging level to `INFO`, simply
+set `LOGURU_LEVEL=INFO` in your environment.
+
 #### Example Usage
 
 Run the Prometheus exporter exposed on `9103` that pulls metrics from the
