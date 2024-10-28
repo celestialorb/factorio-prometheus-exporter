@@ -1,42 +1,132 @@
-# factorio-prometheus-exporter
+# Factorio Prometheus Exporter
 
 A mod for Factorio to produce a variety of Prometheus metrics.
 
 ## Design
 
-This project produces two artifacts: the first being a ZIP archive of the
-Factorio mod, and the second being a container image to read in the output of
-the mod and expose Prometheus metrics on a web endpoint.
-
-## Metrics
-
-Below is a table of metrics that are exported in this version of the exporter.
-
-| Metric                                       | Labels                                  | Description                                                                             |
-| -------------------------------------------- | --------------------------------------- | --------------------------------------------------------------------------------------- |
-| `factorio_entity_count`                      | `force`, `name`, `surface`              | The total number of entities for a force on a surface.                                  |
-| `factorio_force_prototype_consumption_total` | `force`, `prototype`, `surface`, `type` | The total consumption of prototypes for a force.                                        |
-| `factorio_force_prototype_production_total`  | `force`, `prototype`, `surface`, `type` | The total production of prototypes for a force.                                         |
-| `factorio_force_research_progress`           | `force`                                 | The current research progress percentage (0-1) for a given force.                       |
-| `factorio_game_tick`                         | N/A                                     | The game tick the metrics were recorded at.                                             |
-| `factorio_game_ticks_played`                 | N/A                                     | The number of ticks executed of the running Factorio game.                              |
-| `factorio_game_ticks_paused`                 | N/A                                     | Whether or not the game is currently paused.                                            |
-| `factorio_items_launched`                    | `force`, `name`                         | The total number of items launched for a force.                                         |
-| `factorio_player_connected`                  | `username`                              | Whether or not the player is connected.                                                 |
-| `factorio_pollution_consumption`             | `source`, `surface`                     | The current pollution consumption total for a given source on a surface.                |
-| `factorio_pollution_production`              | `source`, `surface`                     | The current pollution production total for a given source on a surface.                 |
-| `factorio_rockets_launched`                  | `force`                                 | The total number of rockets launched for a force.                                       |
-| `factorio_surface_pollution_total`           | `surface`                               | The total pollution across the surface.                                                 |
-| `factorio_surface_ticks_per_day`             | `surface`                               | The total number of ticks per day across the surface.                                   |
+The project produces a single artifact, a container image. This image will run
+the Prometheus exporter which can then be scraped by Prometheus itself.
 
 ## Artifacts
 
-As stated in the Design section, this project produces two artifacts.
+[The container image](https://github.com/celestialorb/factorio-prometheus-exporter/pkgs/container/factorio-prometheus-exporter)
+that sends RCON commands and reads the RCON responses is publicly available for download.
 
-The first is [the Factorio mod](https://mods.factorio.com/mod/factorio-prometheus-exporter)
-itself that produces a JSON file containing the raw metric data. This will need
-to be installed in your game / server.
+### Operating
 
-The second is [the container image](https://github.com/celestialorb/factorio-prometheus-exporter/pkgs/container/factorio-prometheus-exporter)
-that reads in the raw metrics file whenever the Prometheus metrics are
-requested.
+Parameters can be supplied to the Prometheus exporter process via the CLI or by
+environment variables. Usage of the CLI parameters is encouraged over
+enviroment variables with the exception of the RCON password parameter.
+
+Basic help with usage can be obtained via the `--help` flag:
+
+`/opt/exporter/exporter.py --help` or `/opt/exporter/exporter.py run --help`
+
+```sh
+$ /opt/exporter/exporter.py run --help
+                                                                                              
+ Usage: exporter.py run [OPTIONS]                                                             
+                                                                                              
+ Start the Factorio Prometheus exporter.                                                      
+                                                                                              
+╭─ Options ──────────────────────────────────────────────────────────────────────────────────╮
+│ --metrics-port     INTEGER  The port to expose the metrics endpoint on.                    │
+│ --rcon-address     TEXT     The address for the Factorio server.                           │
+│ --rcon-port        INTEGER  The RCON port for the Factorio server.                         │
+│ --rcon-password    TEXT     The RCON password for the server.                              │
+│ --help                      Show this message and exit.                                    │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
+#### Example Usage
+
+Run the Prometheus exporter exposed on `9103` that pulls metrics from the
+Factorio server running at `factorio.example.org`.
+```sh
+/opt/exporter/exporter.py run --metrics-port 9103 --rcon-address factorio.example.org
+```
+
+The RCON password can be supplied via the environment variable
+`FACTORIO_PROMETHEUS_EXPORTER_RUN_RCON_PASSWORD`
+(or via the `--rcon-password` CLI argument).
+
+## Metrics
+
+Metrics are grouped by category onto various endpoints. There is an endpoint
+that returns all metrics, but be warned that collecting all metrics at the same
+time may result in performance issues.
+
+### All Metrics
+
+The endpoint that collects and returns all Prometheus metrics is located at
+`/metrics/all`.
+
+#### Time Metrics
+
+The endpoint that returns time related metrics is located at `/metrics/time`.
+Below is a table of time-related metrics returned by this endpoint.
+
+| Metric                           | Labels    | Description                                                |
+| -------------------------------- | --------- | ---------------------------------------------------------- |
+| `factorio_game_tick`             | N/A       | The game tick the metrics were recorded at.                |
+| `factorio_game_ticks_played`     | N/A       | The number of ticks executed of the running Factorio game. |
+| `factorio_game_ticks_paused`     | N/A       | Whether or not the game is currently paused.               |
+| `factorio_surface_ticks_per_day` | `surface` | The total number of ticks per day across the surface.      |
+
+#### Player Metrics
+
+The endpoint that returns player related metrics is located at `/metrics/player`.
+Below is a table of player-related metrics returned by this endpoint.
+
+| Metric                      | Labels     | Description                             |
+| --------------------------- | ---------- | --------------------------------------- |
+| `factorio_player_connected` | `username` | Whether or not the player is connected. |
+
+#### Launch Metrics
+
+The endpoint that returns rocket launch related metrics is located at `/metrics/launches`.
+Below is a table of launch-related metrics returned by this endpoint.
+
+| Metric                      | Labels          | Description                                       |
+| --------------------------- | --------------- | ------------------------------------------------- |
+| `factorio_items_launched`   | `force`, `name` | The total number of items launched for a force.   |
+| `factorio_rockets_launched` | `force`         | The total number of rockets launched for a force. |
+
+#### Research Metrics
+
+The endpoint that returns research related metrics is located at `/metrics/research`.
+Below is a table of research-related metrics returned by this endpoint.
+
+| Metric                             | Labels  | Description                                                       |
+| ---------------------------------- | ------- | ----------------------------------------------------------------- |
+| `factorio_force_research_progress` | `force` | The current research progress percentage (0-1) for a given force. |
+
+#### Production Metrics
+
+The endpoint that returns production related metrics is located at `/metrics/production`.
+Below is a table of production-related metrics returned by this endpoint.
+
+| Metric                                       | Labels                                  | Description                                                   |
+| -------------------------------------------- | --------------------------------------- | ------------------------------------------------------------- |
+| `factorio_force_prototype_consumption_total` | `force`, `prototype`, `surface`, `type` | The total consumption of prototypes for a force for surface.  |
+| `factorio_force_prototype_production_total`  | `force`, `prototype`, `surface`, `type` | The total production of prototypes for a force for a surface. |
+
+#### Entity Metrics
+
+The endpoint that returns entity related metrics is located at `/metrics/entity`.
+Below is a table of entity-related metrics returned by this endpoint.
+
+| Metric                  | Labels                     | Description                                            |
+| ----------------------- | -------------------------- | ------------------------------------------------------ |
+| `factorio_entity_count` | `force`, `name`, `surface` | The total number of entities for a force on a surface. |
+
+#### Pollution Metrics
+
+The endpoint that returns pollution related metrics is located at `/metrics/pollution`.
+Below is a table of pollution-related metrics returned by this endpoint.
+
+| Metric                             | Labels              | Description                                                              |
+| ---------------------------------- | ------------------- | ------------------------------------------------------------------------ |
+| `factorio_pollution_consumption`   | `source`, `surface` | The current pollution consumption total for a given source on a surface. |
+| `factorio_pollution_production`    | `source`, `surface` | The current pollution production total for a given source on a surface.  |
+| `factorio_surface_pollution_total` | `surface`           | The total pollution across the surface.                                  |
