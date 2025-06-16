@@ -284,11 +284,11 @@ class FactorioProductionCollector(FactorioCollector):
                 prototypes = surface_force_data["prototypes"]
                 for prototype, prototype_data in prototypes.items():
                     force_consumption_stats.add_metric(
-                        labels=[force, prototype, surface, prototype_data["type"]],
+                        labels=[force, prototype, surface],
                         value=prototype_data["consumption"],
                     )
                     force_production_stats.add_metric(
-                        labels=[force, prototype, surface, prototype_data["type"]],
+                        labels=[force, prototype, surface],
                         value=prototype_data["production"],
                     )
 
