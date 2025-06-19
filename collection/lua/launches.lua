@@ -12,8 +12,8 @@ for _, force in pairs(game.forces) do
   metrics["forces"][force.name]["launches"] = {}
   metrics["forces"][force.name]["launches"]["count"] = game.forces[force.name].rockets_launched  
   metrics["forces"][force.name]["launches"]["items"] = {}
-  for _, item in pairs(game.forces[force.name].items_launched) do
-    metrics["forces"][force.name]["launches"]["items"][item.name] = item.count
+  for item, count in pairs(game.forces[force.name].items_launched) do
+    metrics["forces"][force.name]["launches"]["items"][item] = count
   end
 end
 

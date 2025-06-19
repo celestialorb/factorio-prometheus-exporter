@@ -271,12 +271,12 @@ class FactorioProductionCollector(FactorioCollector):
         force_consumption_stats = CounterMetricFamily(
             name="factorio_force_prototype_consumption",
             documentation="The total consumption of a given prototype for a force.",
-            labels=["force", "prototype", "surface", "type"],
+            labels=["force", "prototype", "surface"],
         )
         force_production_stats = CounterMetricFamily(
             name="factorio_force_prototype_production",
             documentation="The total production of a given prototype for a force.",
-            labels=["force", "prototype", "surface", "type"],
+            labels=["force", "prototype", "surface"],
         )
 
         for force, force_data in metrics["forces"].items():
