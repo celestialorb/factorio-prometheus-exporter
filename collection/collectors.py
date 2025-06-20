@@ -369,3 +369,51 @@ class FactorioPollutionCollector(FactorioCollector):
         yield surface_pollution_total_stats
         yield surface_pollution_consumption
         yield surface_pollution_production
+
+class FactorioElectricNetworkStatistics(FactorioCollector):
+    """Represents a collector that collect metrics related to electric networks in the Factorio server."""
+
+    def __init__(self, client: RCONClient) -> None:
+        """Initialize the electric network metrics collector."""
+        super().__init__(client=client, group="electricity")
+
+    def collect(self) -> Generator[Any, Any, Any]:
+        """Collect the metrics and store them in the Prometheus collector."""
+        metrics = self.metrics
+        surface_electric_network_production = GaugeMetricFamily(
+            name="factorio_electric_network_production",
+            documentation="The production of electricity for the past 10 minutes for a given prototype on a surface.",
+            labels=["force", "surface", "entity"],
+        )
+        surface_electric_network_satisfaction = GaugeMetricFamily(
+            name="factorio_electric_network_satisfaction",
+            documentation="The satisfaction of electricity for the past 10 minutes for a given prototype on a surface.",
+            labels=["force", "surface", "entity"],
+        )
+        surface_electric_network_accumulator = GaugeMetricFamily(
+            name="factorio_electric_network_accumulator",
+            documentation="The accumulator charge for the past 10 minutes on a given surface.",
+            labels=["force", "surface", "entity"],
+        )
+
+        for force, force_data in metrics["forces"].items():
+            for surface, surface_force_data in force_data.items():
+                for entity, entity_data in surface_force_data["production"].items():
+                    surface_electric_network_production.add_metric(
+                        labels=[force, surface, entity],
+                        value= entity_data,
+                    )
+                for entity, entity_data in surface_force_data["satisfaction"].items():
+                    surface_electric_network_satisfaction.add_metric(
+                        labels=[force, surface, entity],
+                        value= entity_data,
+                    )
+                for entity, entity_data in surface_force_data["accumulator_charge"].items():
+                    surface_electric_network_accumulator.add_metric(
+                            labels=[force, surface, entity],
+                            value= entity_data,
+                    )
+
+        yield surface_electric_network_production
+        yield surface_electric_network_satisfaction
+        yield surface_electric_network_accumulator

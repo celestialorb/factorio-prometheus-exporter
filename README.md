@@ -137,3 +137,14 @@ Below is a table of pollution-related metrics returned by this endpoint.
 | `factorio_pollution_consumption`   | `source`, `surface` | The current pollution consumption total for a given source on a surface. |
 | `factorio_pollution_production`    | `source`, `surface` | The current pollution production total for a given source on a surface.  |
 | `factorio_surface_pollution_total` | `surface`           | The total pollution across the surface.                                  |
+
+#### Electricity Networks Metrics
+
+The endpoint that returns electricity networks related metrics is located at `/metrics/electricity`.
+Below is a table of electricity-related metrics returned by this endpoint.
+
+| Metric                                   | Labels                       | Description                                                                      |
+| ---------------------------------------- | ---------------------------- | -------------------------------------------------------------------------------- |
+| `factorio_electric_network_production`   | `entity`, `force`, `surface` | The average production for the past 10 minutes per ticks. (*60/1000000 for MW)   |
+| `factorio_electric_network_satisfaction` | `entity`, `force`, `surface` | The average satisfaction for the past 10 minutes per ticks. (*60/1000000 for MW) |
+| `factorio_electric_network_accumulator`  | `entity`, `force`, `surface` | The average accumulator charge for the past 10 minutes (/1000000 for MJ)         |

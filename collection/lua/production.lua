@@ -10,6 +10,8 @@ for _, force in pairs(game.forces) do
   metrics["forces"][force.name] = {}
   for _, surface in pairs(game.surfaces) do
     metrics["forces"][force.name][surface.name] = {}
+
+    -- Collect metrics on production and consumption of item and fluid.
     metrics["forces"][force.name][surface.name]["prototypes"] = {}
     local production = game.forces[force.name].get_item_production_statistics(surface.name)
     local totals = production.input_counts

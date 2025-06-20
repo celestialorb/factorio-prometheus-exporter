@@ -26,6 +26,7 @@ from collection.collectors import (
     FactorioProductionCollector,
     FactorioResearchCollector,
     FactorioTimeCollector,
+    FactorioElectricNetworkStatistics,
 )
 
 LOGGER = loguru.logger.opt(colors=True)
@@ -115,6 +116,7 @@ def run(metrics_port: int, rcon_address: str, rcon_port: int, rcon_password: str
         FactorioProductionCollector(client=client),
         FactorioEntityCollector(client=client),
         FactorioPollutionCollector(client=client),
+        FactorioElectricNetworkStatistics(client=client),
     ]
 
     for collector in collectors:
