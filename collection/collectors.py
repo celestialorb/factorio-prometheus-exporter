@@ -7,7 +7,6 @@ import json
 import pathlib
 import threading
 import time
-from collections.abc import Generator
 from typing import TYPE_CHECKING, Any
 
 import loguru
@@ -19,6 +18,7 @@ from watchdog.observers import Observer
 
 if TYPE_CHECKING:
     import os
+    from collections.abc import Generator
 
     from factorio_rcon import RCONClient
     from twisted.web.resource import Resource
@@ -371,6 +371,7 @@ class FactorioPollutionCollector(FactorioCollector):
         yield surface_pollution_consumption
         yield surface_pollution_production
 
+
 class FactorioElectricNetworkStatistics(FactorioCollector):
     """Represents a collector that collect metrics related to electric networks in the Factorio server."""
 
@@ -402,17 +403,17 @@ class FactorioElectricNetworkStatistics(FactorioCollector):
                 for entity, entity_data in surface_force_data["production"].items():
                     surface_electric_network_production.add_metric(
                         labels=[force, surface, entity],
-                        value= entity_data,
+                        value=entity_data,
                     )
                 for entity, entity_data in surface_force_data["satisfaction"].items():
                     surface_electric_network_satisfaction.add_metric(
                         labels=[force, surface, entity],
-                        value= entity_data,
+                        value=entity_data,
                     )
                 for entity, entity_data in surface_force_data["accumulator_charge"].items():
                     surface_electric_network_accumulator.add_metric(
-                            labels=[force, surface, entity],
-                            value= entity_data,
+                        labels=[force, surface, entity],
+                        value=entity_data,
                     )
 
         yield surface_electric_network_production
