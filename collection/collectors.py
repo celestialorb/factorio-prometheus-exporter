@@ -7,7 +7,8 @@ import json
 import pathlib
 import threading
 import time
-from typing import TYPE_CHECKING, Any, Generator
+from collections.abc import Generator
+from typing import TYPE_CHECKING, Any
 
 import loguru
 from prometheus_client.core import CollectorRegistry, CounterMetricFamily, GaugeMetricFamily

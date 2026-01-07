@@ -19,6 +19,7 @@ from twisted.web.server import Site
 
 from collection.collectors import (
     FactorioAutopauser,
+    FactorioElectricNetworkStatistics,
     FactorioEntityCollector,
     FactorioLaunchesCollector,
     FactorioPlayerCollector,
@@ -26,7 +27,6 @@ from collection.collectors import (
     FactorioProductionCollector,
     FactorioResearchCollector,
     FactorioTimeCollector,
-    FactorioElectricNetworkStatistics,
 )
 
 LOGGER = loguru.logger.opt(colors=True)
